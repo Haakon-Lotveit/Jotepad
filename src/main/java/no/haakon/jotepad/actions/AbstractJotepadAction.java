@@ -1,9 +1,8 @@
 package no.haakon.jotepad.actions;
 
-import no.haakon.jotepad.gui.components.TextEditorPane;
+import no.haakon.jotepad.gui.components.Editor;
 
 import javax.swing.*;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -12,7 +11,7 @@ import static java.util.Arrays.stream;
 
 public abstract class AbstractJotepadAction extends AbstractAction {
 
-    protected final TextEditorPane editor;
+    protected final Editor editor;
     protected final String command;
 
     /**
@@ -26,13 +25,13 @@ public abstract class AbstractJotepadAction extends AbstractAction {
      *                    The actual command will have a UUID (v4) appended to it to make it unique.
      *                    That is, the first piece of the id is for information, the second piece is for uniqueification.
      *                    You can manually mess this up, but automatically, not.
-     * @param editor      The TextEditorPane that this action is supposed to be bound to. Note that it might <i>also</i>
+     * @param editor      The Editor that this action is supposed to be bound to. Note that it might <i>also</i>
      *                    be bound to the menubar. But that's more about the frame having actions injected.
      * @param shortcuts   The keyboard shortcuts you want to use. Note that there is ZERO attempt at having these be
      *                    unique. It's up to the programmer to make sure that they're unique, and that should not be a
      *                    Herculean task.
      */
-    private AbstractJotepadAction(String commandRoot, TextEditorPane editor, Stream<KeyStroke> shortcuts) {
+    private AbstractJotepadAction(String commandRoot, Editor editor, Stream<KeyStroke> shortcuts) {
         command = String.format("%s-%s", commandRoot, UUID.randomUUID());
         this.editor = editor;
         // While this does not actually add any shortcuts, it does tell the editor about this action, and what the command is called.
@@ -46,10 +45,10 @@ public abstract class AbstractJotepadAction extends AbstractAction {
      *                    The actual command will have a UUID (v4) appended to it to make it unique.
      *                    That is, the first piece of the id is for information, the second piece is for uniqueification.
      *                    You can manually mess this up, but automatically, not.
-     * @param editor      The TextEditorPane that this action is supposed to be bound to. Note that it might <i>also</i>
+     * @param editor      The Editor that this action is supposed to be bound to. Note that it might <i>also</i>
      *                    be bound to the menubar. But that's more about the frame having actions injected.
      */
-    public AbstractJotepadAction(String commandRoot, TextEditorPane editor) {
+    public AbstractJotepadAction(String commandRoot, Editor editor) {
         this(commandRoot, editor, Stream.empty());
     }
 
@@ -59,13 +58,13 @@ public abstract class AbstractJotepadAction extends AbstractAction {
      *                    The actual command will have a UUID (v4) appended to it to make it unique.
      *                    That is, the first piece of the id is for information, the second piece is for uniqueification.
      *                    You can manually mess this up, but automatically, not.
-     * @param editor      The TextEditorPane that this action is supposed to be bound to. Note that it might <i>also</i>
+     * @param editor      The Editor that this action is supposed to be bound to. Note that it might <i>also</i>
      *                    be bound to the menubar. But that's more about the frame having actions injected.
      * @param shortcuts   The keyboard shortcuts you want to use. Note that there is ZERO attempt at having these be
      *                    unique. It's up to the programmer to make sure that they're unique, and that should not be a
      *                    Herculean task.
      */
-    public AbstractJotepadAction(String commandRoot, TextEditorPane editor, KeyStroke[] shortcuts) {
+    public AbstractJotepadAction(String commandRoot, Editor editor, KeyStroke[] shortcuts) {
         this(commandRoot, editor, stream(shortcuts));
     }
 
@@ -75,17 +74,17 @@ public abstract class AbstractJotepadAction extends AbstractAction {
      *                    The actual command will have a UUID (v4) appended to it to make it unique.
      *                    That is, the first piece of the id is for information, the second piece is for uniqueification.
      *                    You can manually mess this up, but automatically, not.
-     * @param editor      The TextEditorPane that this action is supposed to be bound to. Note that it might <i>also</i>
+     * @param editor      The Editor that this action is supposed to be bound to. Note that it might <i>also</i>
      *                    be bound to the menubar. But that's more about the frame having actions injected.
      * @param shortcuts   The keyboard shortcuts you want to use. Note that there is ZERO attempt at having these be
      *                    unique. It's up to the programmer to make sure that they're unique, and that should not be a
      *                    Herculean task.
      */
-    public AbstractJotepadAction(String commandRoot, TextEditorPane editor, Collection<KeyStroke> shortcuts) {
+    public AbstractJotepadAction(String commandRoot, Editor editor, Collection<KeyStroke> shortcuts) {
         this(commandRoot, editor, shortcuts.stream());
     }
 
-    public AbstractJotepadAction(String commandRoot, TextEditorPane editor, KeyStroke shortcut) {
+    public AbstractJotepadAction(String commandRoot, Editor editor, KeyStroke shortcut) {
         this(commandRoot, editor, Stream.of(shortcut));
     }
 

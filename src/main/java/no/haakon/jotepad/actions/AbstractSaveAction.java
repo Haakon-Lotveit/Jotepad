@@ -1,10 +1,9 @@
 package no.haakon.jotepad.actions;
 
+import no.haakon.jotepad.gui.components.Editor;
 import no.haakon.jotepad.gui.components.FileChooserOption;
-import no.haakon.jotepad.gui.components.TextEditorPane;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -13,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 public abstract class AbstractSaveAction extends AbstractJotepadAction {
 
-    public AbstractSaveAction(String commandRoot, TextEditorPane editor, KeyStroke shortcut) {
+    public AbstractSaveAction(String commandRoot, Editor editor, KeyStroke shortcut) {
         super(commandRoot, editor, shortcut);
     }
 
@@ -49,7 +48,9 @@ public abstract class AbstractSaveAction extends AbstractJotepadAction {
      */
     protected void save(File fil) {
         if (!fil.canWrite()) {
-            System.err.println("Vi har ikke lov til å skrive til denne filen. TODO: Lag en brukemelding som sier ifra.");
+            System.err.println("Har ikke skriverettigheter til " + fil.getAbsolutePath());
+            String feilmelding = String.format("Har ikke skriverettigheter til fil %s. Kan ikke lagre.", fil.getAbsolutePath());
+            editor.popupError("Kan ikke lagre", feilmelding);
         }
         try (FileOutputStream fos = new FileOutputStream(fil)) {
             String tekst = editor.getText();
@@ -58,11 +59,14 @@ public abstract class AbstractSaveAction extends AbstractJotepadAction {
                 fos.write(data);
             } catch (IOException ioe) {
                 System.err.println("Kan ikke skrive data:\n" + ioe);
+                editor.popupError("Feil under lagring", "Kan ikke skrive data.");
             }
         } catch (FileNotFoundException fnfe) {
             System.err.println("Finner ikke filen.");
+            editor.popupError("Finner ikke filen", String.format("Fil %s finnes ikke", fil.getAbsolutePath()));
         } catch (IOException ioe) {
             System.err.println("En generisk io-feil oppstod:\n" + ioe);
+            editor.popupError("Feil under lagring", "En ukjent feil oppstod under lagring");
         }
     }
 }

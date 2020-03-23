@@ -1,6 +1,6 @@
 package no.haakon.jotepad.actions;
 
-import no.haakon.jotepad.gui.components.TextEditorPane;
+import no.haakon.jotepad.gui.components.Editor;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -9,7 +9,7 @@ public class ExitAction extends AbstractJotepadAction {
 
     public static final String COMMAND_ROOT = "EXIT";
 
-    public ExitAction(TextEditorPane editor, KeyStroke shortcut) {
+    public ExitAction(Editor editor, KeyStroke shortcut) {
         super(COMMAND_ROOT, editor, shortcut);
     }
 

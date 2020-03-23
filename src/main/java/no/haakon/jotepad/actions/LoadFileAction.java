@@ -1,7 +1,7 @@
 package no.haakon.jotepad.actions;
 
+import no.haakon.jotepad.gui.components.Editor;
 import no.haakon.jotepad.gui.components.FileChooserOption;
-import no.haakon.jotepad.gui.components.TextEditorPane;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -12,7 +12,7 @@ public class LoadFileAction extends AbstractJotepadAction {
 
     public static final String COMMAND_ROOT = "ÅPNE";
 
-    public LoadFileAction(TextEditorPane editor, KeyStroke snarvei) {
+    public LoadFileAction(Editor editor, KeyStroke snarvei) {
         super(COMMAND_ROOT, editor, snarvei);
     }
 

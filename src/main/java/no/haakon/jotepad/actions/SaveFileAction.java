@@ -1,6 +1,6 @@
 package no.haakon.jotepad.actions;
 
-import no.haakon.jotepad.gui.components.TextEditorPane;
+import no.haakon.jotepad.gui.components.Editor;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -9,7 +9,7 @@ final public class SaveFileAction extends AbstractSaveAction {
 
     public static final String COMMAND_ROOT = "LAGRE";
 
-    public SaveFileAction(TextEditorPane editor, KeyStroke shortcut) {
+    public SaveFileAction(Editor editor, KeyStroke shortcut) {
         super(COMMAND_ROOT, editor, shortcut);
     }
 
