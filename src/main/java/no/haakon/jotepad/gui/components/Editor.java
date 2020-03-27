@@ -1,6 +1,9 @@
 package no.haakon.jotepad.gui.components;
 
+import no.haakon.jotepad.actions.undo.TestUndoer;
+
 import javax.swing.*;
+import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,11 +19,22 @@ public class Editor extends JTextArea {
 
     private File editingFile = null;
     private final Map<String, String> state;
+    private final TestUndoer undoer;
 
     public Editor() {
         super();
         this.setPreferredSize(new Dimension(1024, 768));
         this.state = new HashMap<>();
+
+        undoer = new TestUndoer(this);
+        this.getDocument().addUndoableEditListener(undoer);
+    }
+
+    /**
+     * @return the UndoManager associated with this editor's Document.
+     */
+    public TestUndoer getUndoer() {
+        return undoer;
     }
 
     /**

@@ -11,8 +11,8 @@ public class FindTextAction extends AbstractSearchAction {
 
     public static final String COMMAND_ROOT = "SØK";
 
-    public FindTextAction(Editor editor, KeyStroke shortcut) {
-        super(COMMAND_ROOT, editor, Collections.singleton(shortcut));
+    public FindTextAction(Editor editor) {
+        super(COMMAND_ROOT, editor, Collections.emptyList());
     }
 
     /**

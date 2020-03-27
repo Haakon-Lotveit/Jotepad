@@ -10,8 +10,8 @@ public class FindPreviousAction extends AbstractSearchAction {
 
     public static final String COMMAND_ROOT = "SØK-BAK";
 
-    public FindPreviousAction(Editor editor, KeyStroke shortcut) {
-        super(COMMAND_ROOT, editor, shortcut);
+    public FindPreviousAction(Editor editor) {
+        super(COMMAND_ROOT, editor);
     }
 
     @Override

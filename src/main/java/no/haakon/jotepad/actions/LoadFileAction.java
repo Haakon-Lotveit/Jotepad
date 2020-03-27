@@ -12,6 +12,10 @@ public class LoadFileAction extends AbstractJotepadAction {
 
     public static final String COMMAND_ROOT = "ÅPNE";
 
+    public LoadFileAction(Editor editor) {
+        super(COMMAND_ROOT, editor);
+    }
+
     public LoadFileAction(Editor editor, KeyStroke snarvei) {
         super(COMMAND_ROOT, editor, snarvei);
     }

@@ -16,6 +16,10 @@ public abstract class AbstractSaveAction extends AbstractJotepadAction {
         super(commandRoot, editor, shortcut);
     }
 
+    public AbstractSaveAction(String commandRoot, Editor editor) {
+        super(commandRoot, editor);
+    }
+
     /**
      * Denne metoden vil finne en fil, og bruke filen brukeren velger til å lagre til.
      * Dersom editoren ikke har en fil assosiert med seg, må enten denne eller tilsvarende gjøres av Lagre.

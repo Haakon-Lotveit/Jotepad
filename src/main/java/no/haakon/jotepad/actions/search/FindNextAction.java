@@ -10,8 +10,8 @@ public class FindNextAction extends AbstractSearchAction {
 
     public static final String COMMAND_ROOT = "SØK-FRAM";
 
-    public FindNextAction(Editor editor, KeyStroke shortcut) {
-        super(COMMAND_ROOT, editor, shortcut);
+    public FindNextAction(Editor editor) {
+        super(COMMAND_ROOT, editor);
     }
 
     @Override

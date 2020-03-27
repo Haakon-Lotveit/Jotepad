@@ -9,6 +9,10 @@ final public class SaveAsAction extends AbstractSaveAction {
 
     public static final String COMMAND_ROOT = "LAGRE_SOM";
 
+    public SaveAsAction(Editor editor) {
+        super(COMMAND_ROOT, editor);
+    }
+
     public SaveAsAction(Editor editor, KeyStroke shortcut) {
         super(COMMAND_ROOT, editor, shortcut);
     }

@@ -24,6 +24,10 @@ public abstract class AbstractSearchAction extends AbstractJotepadAction {
         this(commandRoot, editor, Collections.singleton(shortcut));
     }
 
+    public AbstractSearchAction(String commandRoot, Editor editor) {
+        this(commandRoot, editor, Collections.emptyList());
+    }
+
     protected void setSimpleSearchTerm(String searchTerm) {
         if(searchTerm == null || searchTerm.isEmpty()) {
             System.err.println("Prøvde å sette søketerm til en tom verdi, ingenting blir satt.");

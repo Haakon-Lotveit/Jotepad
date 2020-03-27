@@ -24,7 +24,6 @@ public class Jotepad {
         }
         catch (Exception e) {
             System.err.println("Kunne ikke bruke systemets innebygde look and feel");
-            System.out.println(UIManager.getSystemLookAndFeelClassName());
         }
     }
 
@@ -32,8 +31,8 @@ public class Jotepad {
 
         System.out.println("Tilgjengelige utseender:");
         Arrays.stream(UIManager.getInstalledLookAndFeels()).forEach(info -> System.out.println(info.getClassName()));
-        System.getenv().forEach((k, v) -> System.out.printf("%s: %s%n", k, v));
         if (System.getenv().containsKey("LOOK_AND_FEEL")) {
+            System.out.println("Fant systemvariabel LOOK_AND_FEEL. Bruker denne til å sette utseende.");
             String lookAndFeelClassname = System.getenv("LOOK_AND_FEEL");
             try {
                 UIManager.setLookAndFeel(lookAndFeelClassname);
@@ -44,8 +43,11 @@ public class Jotepad {
                 useSystemLookAndFeel();
             }
         }
-        else {
-            useSystemLookAndFeel();
+        else if(System.getProperties().containsKey("look.and.feel")) {
+
+        }
+         else {
+             useSystemLookAndFeel();
         }
     JFrame applicationFrame = new ApplicationFrame();
 
@@ -54,89 +56,7 @@ public class Jotepad {
 //        editingArea.getInputMap().put(aKeyStroke, aCommand);
 //        editingArea.getActionMap().put(aCommmand, anAction);
 
-    JotepadMenubar menuBar = new JotepadMenubar();
-    JMenu fil = new JMenu("Fil");
-
-    JMenuItem nyFil = new JMenuItem();
-    NewFileAction newFileAction = new NewFileAction(editor, KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK));
-        nyFil.setAction(newFileAction);
-        nyFil.setText("Ny...");
-        fil.add(nyFil);
-
-    JMenuItem åpne = new JMenuItem();
-        åpne.setAction(new
-
-    LoadFileAction(editor, KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)));
-        åpne.setText("Åpne fil");
-        fil.add(åpne);
-
-    JMenuItem lagre = new JMenuItem();
-        lagre.setAction(new
-
-    SaveFileAction(editor, KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)));
-        lagre.setText("Lagre");
-        fil.add(lagre);
-
-    JMenuItem lagreSom = new JMenuItem();
-        lagreSom.setAction(new
-
-    SaveAsAction(editor, KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK |InputEvent.SHIFT_DOWN_MASK)));
-        lagreSom.setText("Lagre som");
-        fil.add(lagreSom);
-
-    JMenuItem avslutt = new JMenuItem();
-        avslutt.setAction(new
-
-    ExitAction(editor, KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK)));
-        avslutt.setText("Avslutt");
-        fil.add(avslutt);
-
-        menuBar.add(fil);
-
-    JMenu rediger = new JMenu("Rediger");
-
-    JMenuItem enkeltSøk = new JMenuItem();
-        enkeltSøk.setAction(new
-
-    FindTextAction(editor, KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK |InputEvent.SHIFT_DOWN_MASK)));
-        enkeltSøk.setText("Søk");
-        rediger.add(enkeltSøk);
-
-        menuBar.add(rediger);
-
-    JMenu søking = new JMenu("Søking");
-
-    JMenuItem setSøketerm = new JMenuItem();
-        setSøketerm.setAction(new
-
-    SetSearchTermAction(editor, KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK |InputEvent.SHIFT_DOWN_MASK)));
-        setSøketerm.setText("Sett søketerm [enkelt søk]");
-        søking.add(setSøketerm);
-
-    JMenuItem visSøketerm = new JMenuItem();
-        visSøketerm.setAction(new
-
-    ShowSearchTermAction(editor, KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK |InputEvent.ALT_DOWN_MASK)));
-        visSøketerm.setText("Vis søketerm");
-        søking.add(visSøketerm);
-
-    JMenuItem søkForrige = new JMenuItem();
-        søkForrige.setAction(new
-
-    FindPreviousAction(editor, KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK)));
-        søkForrige.setText("Finn forrige");
-        søking.add(søkForrige);
-
-    JMenuItem søkNeste = new JMenuItem();
-        søkNeste.setAction(new
-
-    FindNextAction(editor, KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK)));
-        søkNeste.setText("Finn neste");
-        søking.add(søkNeste);
-
-        menuBar.add(søking);
-
-        applicationFrame.setJMenuBar(menuBar);
+        applicationFrame.setJMenuBar(new JotepadMenubar(editor));
         applicationFrame.getContentPane().
 
     add(editor.getInScrollPane());

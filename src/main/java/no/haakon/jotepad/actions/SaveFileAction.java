@@ -9,6 +9,9 @@ final public class SaveFileAction extends AbstractSaveAction {
 
     public static final String COMMAND_ROOT = "LAGRE";
 
+    public SaveFileAction(Editor editor) {
+        super(COMMAND_ROOT, editor);
+    }
     public SaveFileAction(Editor editor, KeyStroke shortcut) {
         super(COMMAND_ROOT, editor, shortcut);
     }
