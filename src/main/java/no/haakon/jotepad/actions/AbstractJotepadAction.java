@@ -15,11 +15,11 @@ public abstract class AbstractJotepadAction extends AbstractAction {
     protected final String command;
 
     /**
-     * This constructor is private because Streams are not meant to be used as arguments in general.
-     * However, I consider this to be fine, since the Stream objects are in this case guaranteed to be created
-     * just for this method, and therefore there's no insanity going on anywhere.
-     * <p>
-     * This is the big constructor that actually does the work, the others just delegate to this.
+     * This constructor is protected because Streams are not meant to be used as arguments in general.
+     * However, I consider this to be fine, as a Stream is a fine lowest-common-demoninator: You can have an array, collection or a singular object represented in a stream.
+     * This makes things easier.
+     *
+     * This makes inheriting from the abstract class a bit simpler, since you can specify all sorts of constructors yourself, depending on need.
      *
      * @param commandRoot The root of the command. Typically something like "NEW_FILE", or "SAVE",etc.
      *                    The actual command will have a UUID (v4) appended to it to make it unique.
@@ -31,7 +31,7 @@ public abstract class AbstractJotepadAction extends AbstractAction {
      *                    unique. It's up to the programmer to make sure that they're unique, and that should not be a
      *                    Herculean task.
      */
-    private AbstractJotepadAction(String commandRoot, Editor editor, Stream<KeyStroke> shortcuts) {
+    protected AbstractJotepadAction(String commandRoot, Editor editor, Stream<KeyStroke> shortcuts) {
         command = String.format("%s-%s", commandRoot, UUID.randomUUID());
         this.editor = editor;
         // While this does not actually add any shortcuts, it does tell the editor about this action, and what the command is called.
@@ -40,7 +40,12 @@ public abstract class AbstractJotepadAction extends AbstractAction {
     }
 
     /**
-     * Creates a new AbstractJotepadAction.
+     * This constructor is protected because Streams are not meant to be used as arguments in general.
+     * However, I consider this to be fine, as a Stream is a fine lowest-common-demoninator: You can have an array, collection or a singular object represented in a stream.
+     * This makes things easier.
+     *
+     * This makes inheriting from the abstract class a bit simpler, since you can specify all sorts of constructors yourself, depending on need.
+     *
      * @param commandRoot The root of the command. Typically something like "NEW_FILE", or "SAVE",etc.
      *                    The actual command will have a UUID (v4) appended to it to make it unique.
      *                    That is, the first piece of the id is for information, the second piece is for uniqueification.
@@ -48,49 +53,13 @@ public abstract class AbstractJotepadAction extends AbstractAction {
      * @param editor      The Editor that this action is supposed to be bound to. Note that it might <i>also</i>
      *                    be bound to the menubar. But that's more about the frame having actions injected.
      */
-    public AbstractJotepadAction(String commandRoot, Editor editor) {
-        this(commandRoot, editor, Stream.empty());
+    protected AbstractJotepadAction(String commandRoot, Editor editor) {
+        this(commandRoot, editor, Stream.empty()); // This is just a convenience for actions without direct shortcuts.
     }
 
-    /**
-     * Creates a new AbstractJotepadAction
-     * @param commandRoot The root of the command. Typically something like "NEW_FILE", or "SAVE",etc.
-     *                    The actual command will have a UUID (v4) appended to it to make it unique.
-     *                    That is, the first piece of the id is for information, the second piece is for uniqueification.
-     *                    You can manually mess this up, but automatically, not.
-     * @param editor      The Editor that this action is supposed to be bound to. Note that it might <i>also</i>
-     *                    be bound to the menubar. But that's more about the frame having actions injected.
-     * @param shortcuts   The keyboard shortcuts you want to use. Note that there is ZERO attempt at having these be
-     *                    unique. It's up to the programmer to make sure that they're unique, and that should not be a
-     *                    Herculean task.
-     */
-    public AbstractJotepadAction(String commandRoot, Editor editor, KeyStroke[] shortcuts) {
-        this(commandRoot, editor, stream(shortcuts));
-    }
-
-    /**
-     * Creates a new AbstractJotepadAction
-     * @param commandRoot The root of the command. Typically something like "NEW_FILE", or "SAVE",etc.
-     *                    The actual command will have a UUID (v4) appended to it to make it unique.
-     *                    That is, the first piece of the id is for information, the second piece is for uniqueification.
-     *                    You can manually mess this up, but automatically, not.
-     * @param editor      The Editor that this action is supposed to be bound to. Note that it might <i>also</i>
-     *                    be bound to the menubar. But that's more about the frame having actions injected.
-     * @param shortcuts   The keyboard shortcuts you want to use. Note that there is ZERO attempt at having these be
-     *                    unique. It's up to the programmer to make sure that they're unique, and that should not be a
-     *                    Herculean task.
-     */
-    public AbstractJotepadAction(String commandRoot, Editor editor, Collection<KeyStroke> shortcuts) {
-        this(commandRoot, editor, shortcuts.stream());
-    }
-
-    public AbstractJotepadAction(String commandRoot, Editor editor, KeyStroke shortcut) {
-        this(commandRoot, editor, Stream.of(shortcut));
-    }
 
     /**
      * Adds a shortcut to the editor.
-     * @param shortcut
      */
     private void addShortcut(KeyStroke shortcut) {
         editor.getInputMap().put(shortcut, command);

@@ -14,9 +14,7 @@ public class CompoundedEditManager {
     }
 
     public void receiveUndoableEdit(UndoableEdit edit) {
-        System.out.println("periode: " + building.periode());
         if(building.periode() > aldersgrense) {
-            System.out.println("ny edit");
             compoundedEdits.add(building);
             building = new CompoundedEdit();
         }

@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
 
 public class LoadFileAction extends AbstractJotepadAction {
 
@@ -16,28 +17,9 @@ public class LoadFileAction extends AbstractJotepadAction {
         super(COMMAND_ROOT, editor);
     }
 
-    public LoadFileAction(Editor editor, KeyStroke snarvei) {
-        super(COMMAND_ROOT, editor, snarvei);
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
-        JFileChooser fileChooser = new JFileChooser();
-        int returnVal = fileChooser.showOpenDialog(editor);
-
-        switch (FileChooserOption.from(returnVal)) {
-            case APPROVE:
-                File valgtFil = fileChooser.getSelectedFile();
-                System.out.println("Har valgt fil: " + valgtFil.getAbsolutePath());
-                editor.loadFile(valgtFil, StandardCharsets.UTF_8);
-                break;
-            case CANCEL:
-                System.out.println("Brukeren avbrøt");
-                break;
-            case ERROR:
-                System.out.println("Noe gikk galt!");
-                break;
-        }
-
+        final Consumer<File> åpneMedUtf8 = f -> editor.loadFile(f, StandardCharsets.UTF_8);
+        editor.filDialogÅpne().ifPresent(åpneMedUtf8);
     }
 }

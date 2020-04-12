@@ -9,8 +9,8 @@ public class ExitAction extends AbstractJotepadAction {
 
     public static final String COMMAND_ROOT = "EXIT";
 
-    public ExitAction(Editor editor, KeyStroke... shortcuts) {
-        super(COMMAND_ROOT, editor, shortcuts);
+    public ExitAction(Editor editor) {
+        super(COMMAND_ROOT, editor);
     }
 
     /**

@@ -4,13 +4,14 @@ import no.haakon.jotepad.gui.components.Editor;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
 
 public class NewFileAction extends AbstractJotepadAction {
 
     public static final String COMMAND_ROOT = "NY-FIL";
 
-    public NewFileAction(Editor editor, KeyStroke... shortcuts) {
-        super(COMMAND_ROOT, editor, shortcuts);
+    public NewFileAction(Editor editor) {
+        super(COMMAND_ROOT, editor);
     }
 
     @Override

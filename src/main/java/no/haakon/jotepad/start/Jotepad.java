@@ -21,8 +21,7 @@ public class Jotepad {
     private static void useSystemLookAndFeel() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println("Kunne ikke bruke systemets innebygde look and feel");
         }
     }
@@ -33,36 +32,36 @@ public class Jotepad {
         Arrays.stream(UIManager.getInstalledLookAndFeels()).forEach(info -> System.out.println(info.getClassName()));
         if (System.getenv().containsKey("LOOK_AND_FEEL")) {
             System.out.println("Fant systemvariabel LOOK_AND_FEEL. Bruker denne til å sette utseende.");
-            String lookAndFeelClassname = System.getenv("LOOK_AND_FEEL");
-            try {
-                UIManager.setLookAndFeel(lookAndFeelClassname);
-            }
-            catch (Exception e) {
-                System.err.println("Fant ikke look-and-feel med navn:" + lookAndFeelClassname);
-                System.err.println("Bruker innebygget istedet");
-                useSystemLookAndFeel();
-            }
-        }
-        else if(System.getProperties().containsKey("look.and.feel")) {
+            forsøkLookAndFeel(System.getenv("LOOK_AND_FEEL"));
 
-        }
-         else {
-             useSystemLookAndFeel();
-        }
-    JFrame applicationFrame = new ApplicationFrame();
+        } else if (System.getProperties().containsKey("look.and.feel")) {
+            System.out.println("Fant property look.and.feel. Bruker denne til å sette utseende.");
+            forsøkLookAndFeel(System.getProperty("look.and.feel"));
 
-    Editor editor = new Editor();
+        } else {
+            useSystemLookAndFeel();
+        }
+        ApplicationFrame applicationFrame = new ApplicationFrame();
 
-//        editingArea.getInputMap().put(aKeyStroke, aCommand);
-//        editingArea.getActionMap().put(aCommmand, anAction);
+        Editor editor = new Editor(applicationFrame);
 
         applicationFrame.setJMenuBar(new JotepadMenubar(editor));
-        applicationFrame.getContentPane().
-
-    add(editor.getInScrollPane());
+        JScrollPane editorPane = editor.getInScrollPane();
+        applicationFrame.getContentPane().add(editorPane);
         applicationFrame.pack();
+        applicationFrame.sentrerPåSkjerm();
         applicationFrame.setVisible(true);
 
 
-}
+    }
+
+    private static void forsøkLookAndFeel(String lookAndFeelClassname) {
+        try {
+            UIManager.setLookAndFeel(lookAndFeelClassname);
+        } catch (Exception e) {
+            System.err.println("Fant ikke look-and-feel med navn:" + lookAndFeelClassname);
+            System.err.println("Bruker innebygget istedet");
+            useSystemLookAndFeel();
+        }
+    }
 }

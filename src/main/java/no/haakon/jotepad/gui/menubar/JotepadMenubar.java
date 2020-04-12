@@ -1,6 +1,8 @@
 package no.haakon.jotepad.gui.menubar;
 
 import no.haakon.jotepad.actions.*;
+import no.haakon.jotepad.actions.files.ProsjektFilSøkAction;
+import no.haakon.jotepad.actions.files.SettProsjektMappe;
 import no.haakon.jotepad.actions.search.*;
 import no.haakon.jotepad.gui.components.Editor;
 
@@ -59,14 +61,14 @@ public class JotepadMenubar extends JMenuBar {
         JMenu rediger = new JMenu("Rediger");
 
         rediger.add(lagJMenuItem(
-				 "Søk",
-				 new FindTextAction(editor),
-        KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK)));
+                "Søk",
+                new FindTextAction(editor),
+                KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK)));
 
         rediger.add(lagJMenuItem(
-				 "Angre",
-				 new UndoAction(editor),
-        KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK)));
+                "Angre",
+                new UndoAction(editor),
+                KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK)));
 
         this.add(rediger);
     }
@@ -75,30 +77,42 @@ public class JotepadMenubar extends JMenuBar {
         JMenu søking = new JMenu("Søking");
 
         søking.add(lagJMenuItem(
-				"Sett søketerm [enkelt søk]",
-				new SetSearchTermAction(editor),
-				KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK)));
+                "Sett søketerm [enkelt søk]",
+                new SetSearchTermAction(editor),
+                KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK)));
 
-	søking.add(lagJMenuItem(
-				"Vis søketerm",
-				new ShowSearchTermAction(editor),
-				KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK)));
+        søking.add(lagJMenuItem(
+                "Vis søketerm",
+                new ShowSearchTermAction(editor),
+                KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK)));
 
-	søking.add(lagJMenuItem(
-				"Finn forrige",
-				new FindPreviousAction(editor),
-				KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK)));
+        søking.add(lagJMenuItem(
+                "Finn forrige",
+                new FindPreviousAction(editor),
+                KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK)));
 
-	søking.add(lagJMenuItem(
-				"Finn neste",
-				new FindNextAction(editor),
-				KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK)));
+        søking.add(lagJMenuItem(
+                "Finn neste",
+                new FindNextAction(editor),
+                KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK)));
 
         this.add(søking);
     }
 
     private void setupProsjekt() {
+        JMenu indeksering = new JMenu("Prosjekt");
 
+        indeksering.add(lagJMenuItem("Sett prosjektmappe",
+                                     new SettProsjektMappe(editor),
+                                     KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK)));
+
+        indeksering.add(lagJMenuItem(
+                "Finn fil",
+                new ProsjektFilSøkAction(editor),
+                KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK)));
+
+
+        this.add(indeksering);
     }
 
     private JMenuItem lagJMenuItem(String navn, Action action, KeyStroke hurtigtast) {

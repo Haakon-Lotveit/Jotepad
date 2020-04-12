@@ -9,11 +9,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
 public abstract class AbstractSaveAction extends AbstractJotepadAction {
 
     public AbstractSaveAction(String commandRoot, Editor editor, KeyStroke shortcut) {
-        super(commandRoot, editor, shortcut);
+        super(commandRoot, editor, Stream.of(shortcut));
     }
 
     public AbstractSaveAction(String commandRoot, Editor editor) {

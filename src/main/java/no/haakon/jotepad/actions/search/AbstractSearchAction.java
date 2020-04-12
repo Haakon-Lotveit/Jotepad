@@ -11,17 +11,13 @@ import java.util.UUID;
 public abstract class AbstractSearchAction extends AbstractJotepadAction {
 
     protected static final String SEARCH_STATE_PREFIX = "SØK-" + UUID.randomUUID();
-    protected static final String SEARCH_TERM = "-TERM";
-    protected static final String SEARCH_TYPE = "-TYPE";
+    protected static final String SEARCH_TERM = "TERM";
+    protected static final String SEARCH_TYPE = "TYPE";
 
 
     public AbstractSearchAction(String commandRoot, Editor editor, Collection<KeyStroke> shortcuts) {
-        super(commandRoot, editor, shortcuts);
+        super(commandRoot, editor, shortcuts.stream());
         editor.setValue(SEARCH_STATE_PREFIX + SEARCH_TYPE, Søketype.INGEN.name());
-    }
-
-    public AbstractSearchAction(String commandRoot, Editor editor, KeyStroke shortcut) {
-        this(commandRoot, editor, Collections.singleton(shortcut));
     }
 
     public AbstractSearchAction(String commandRoot, Editor editor) {
