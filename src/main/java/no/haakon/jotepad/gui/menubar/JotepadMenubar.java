@@ -1,8 +1,9 @@
 package no.haakon.jotepad.gui.menubar;
 
 import no.haakon.jotepad.actions.*;
-import no.haakon.jotepad.actions.files.ProsjektFilSøkAction;
-import no.haakon.jotepad.actions.files.SettProsjektMappe;
+import no.haakon.jotepad.actions.prosjekt.ProsjektFilSøkAction;
+import no.haakon.jotepad.actions.prosjekt.ProsjektTekstSøkAction;
+import no.haakon.jotepad.actions.prosjekt.SettProsjektMappe;
 import no.haakon.jotepad.actions.search.*;
 import no.haakon.jotepad.gui.components.Editor;
 
@@ -100,19 +101,21 @@ public class JotepadMenubar extends JMenuBar {
     }
 
     private void setupProsjekt() {
-        JMenu indeksering = new JMenu("Prosjekt");
+        JMenu prosjekt = new JMenu("Prosjekt");
 
-        indeksering.add(lagJMenuItem("Sett prosjektmappe",
-                                     new SettProsjektMappe(editor),
-                                     KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK)));
+        prosjekt.add(lagJMenuItem("Sett prosjektmappe",
+                                  new SettProsjektMappe(editor),
+                                  KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK)));
 
-        indeksering.add(lagJMenuItem(
-                "Finn fil",
-                new ProsjektFilSøkAction(editor),
-                KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK)));
+        prosjekt.add(lagJMenuItem("Finn fil",
+                                  new ProsjektFilSøkAction(editor),
+                                  KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK)));
 
+        prosjekt.add(lagJMenuItem("Finn Tekst",
+                                  new ProsjektTekstSøkAction(editor),
+                                  KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.ALT_DOWN_MASK)));
 
-        this.add(indeksering);
+        this.add(prosjekt);
     }
 
     private JMenuItem lagJMenuItem(String navn, Action action, KeyStroke hurtigtast) {

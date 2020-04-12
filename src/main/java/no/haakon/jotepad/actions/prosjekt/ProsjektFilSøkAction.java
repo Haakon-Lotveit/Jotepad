@@ -1,4 +1,4 @@
-package no.haakon.jotepad.actions.files;
+package no.haakon.jotepad.actions.prosjekt;
 
 import no.haakon.jotepad.gui.components.Editor;
 import no.haakon.jotepad.gui.components.ProsjektFinnFilVindu;
@@ -6,10 +6,7 @@ import no.haakon.jotepad.gui.components.ProsjektFinnFilVindu;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -47,13 +44,12 @@ public class ProsjektFilSøkAction extends AbstractProsjektAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(editor.getValue(NØKKEL_INDEKSERT_MAPPE) == null) {
-            System.err.println("Ingen mappe indeksert, kan ikke gjøre noe enda.");
-            editor.popupError("Ingen mappe satt", "Ingen mappe satt som prosjektmappe. Sett denne først.");
+        if (!mappeHarBlittSatt()) {
             return;
         }
         Set<File> gyldigeFiler = getSøkbareFiler();
 
         SwingUtilities.invokeLater(() -> new ProsjektFinnFilVindu(getSøkbareFiler(), editor));
     }
+
 }

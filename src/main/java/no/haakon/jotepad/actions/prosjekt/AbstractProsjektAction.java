@@ -1,10 +1,9 @@
-package no.haakon.jotepad.actions.files;
+package no.haakon.jotepad.actions.prosjekt;
 
 import no.haakon.jotepad.actions.AbstractJotepadAction;
 import no.haakon.jotepad.gui.components.Editor;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -93,9 +92,24 @@ public abstract class AbstractProsjektAction extends AbstractJotepadAction {
         }
     }
 
+    protected boolean mappeHarBlittSatt() {
+        if(editor.getValue(NØKKEL_INDEKSERT_MAPPE) == null) {
+            System.err.println("Ingen mappe indeksert, kan ikke gjøre noe enda.");
+            editor.popupError("Ingen mappe satt", "Ingen mappe satt som prosjektmappe. Sett denne først.");
+            return false;
+        }
+        return true;
+    }
+
     // Vi kan garantere at denne holder, gitt at andre aksesser til editor respekterer grensene som er satt.
     @SuppressWarnings("unchecked")
     protected Set<File> getSøkbareFiler() {
         return (Set<File>) editor.getTypedObject(Set.class, NØKKEL_INDEKSERTE_FILER);
+    }
+
+    // Vi kan garantere at også denne casten holder, gitt at andre aksesser til editor respekterer grensene som er satt.
+    @SuppressWarnings("unchecked")
+    protected Map<File, String> getIndeksertInnhold() {
+        return (Map<File, String>) editor.getTypedObject(Map.class, NØKKEL_INDEKSERT_INNHOLD);
     }
 }

@@ -1,6 +1,6 @@
 package no.haakon.jotepad.gui.components;
 
-import no.haakon.jotepad.actions.search.RegexSearcher;
+import no.haakon.jotepad.actions.prosjekt.Treff;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -10,22 +10,24 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Stream;
 
 import static java.lang.Integer.max;
 
-/**
- * Lar det opprette og behandle et interaktivt søk.
- */
-public class ProsjektFinnFilVindu {
+public class ProsjektSøkTekstVindu {
 
-    private final Collection<File> filer;
+    private static final String vindustittel = "Søkeresultater";
     private final Editor assosiertEditor;
-    private JList<File> lovligeFiler;
+    private final Map<File, String> innhold;
+    private JList<Treff> treffListe;
     private JFrame vindu;
 
     // Lys, Kamera, ACTION!
@@ -55,7 +57,7 @@ public class ProsjektFinnFilVindu {
         private void react(DocumentEvent e) {
             try {
                 String tekst = e.getDocument().getText(0, e.getDocument().getLength());
-                oppdaterFiler(tekst);
+                oppdaterTreff(tekst);
             } catch (BadLocationException ble) {
                 System.err.println("Kunne ikke hente ut teksten fra søkefeltet, noe som aldri burde skje.");
             }
@@ -66,7 +68,7 @@ public class ProsjektFinnFilVindu {
     private final MouseListener håndterLister = new MouseListener() {
         @Override
         public void mouseClicked(MouseEvent e) {
-            if(e.getClickCount() > 1) {
+            if (e.getClickCount() > 1) {
                 velgFil();
             }
         }
@@ -92,25 +94,26 @@ public class ProsjektFinnFilVindu {
         }
     };
 
-    public ProsjektFinnFilVindu(Collection<File> filerIProsjektet, Editor assosiertEditor) {
-        this.filer = filerIProsjektet;
+    // TODO: Kopiert over fra PFFV.java, må fikses senere.
+    public ProsjektSøkTekstVindu(Map<File, String> innhold, Editor assosiertEditor) {
+        this.innhold = innhold;
         this.assosiertEditor = assosiertEditor;
         init(assosiertEditor.getParentFrame());
     }
 
     private void velgFil() {
-        if (lovligeFiler.getModel().getSize() == 0) {
+        if (treffListe.getModel().getSize() == 0) {
             // Ingen filer å velge, så ikke gjør noe som helst!
             return;
         }
-        switch (lovligeFiler.getSelectedIndex()) {
+        switch (treffListe.getSelectedIndex()) {
             // Ingenting valgt, velg første fil.
             case -1:
-                lovligeFiler.setSelectedIndex(0);
+                treffListe.setSelectedIndex(0);
                 // Merk at det ikke er en break, så ting hopper bare videre.
                 // Dette er bare jeg som syntes det var gøy, og jeg ville ikke gjort dette på jobb, så å si.
             default:
-                assosiertEditor.loadFile(lovligeFiler.getSelectedValue(), StandardCharsets.UTF_8);
+                assosiertEditor.loadFile(treffListe.getSelectedValue().getFil(), StandardCharsets.UTF_8);
                 lukkVindu();
         }
     }
@@ -119,23 +122,43 @@ public class ProsjektFinnFilVindu {
         vindu.dispose();
     }
 
-    public void oppdaterFiler(String tekst) {
-        Pattern mønster;
-        try {
-            mønster = Pattern.compile(tekst);
-        } catch(PatternSyntaxException ignored) {
-            System.err.println("Syntaksfeil i regex, oppdaterer ikke liste for tekst '" + tekst + "'");
+    public void oppdaterTreff(String tekst) {
+        if(tekst.length() < 3) {
+            // dette er for knotete å søke etter!
+            treffListe.setModel(new DefaultListModel<>());
+            vindu.setTitle(vindustittel);
             return;
         }
-        Predicate<File> matcherMønster = fil -> tekst.isEmpty() || mønster.matcher(fil.getName()).find();
 
-        DefaultListModel<File> nyListModel = new DefaultListModel<>();
-        filer.stream()
-                .filter(matcherMønster)
-                .sorted()
-                .forEach(nyListModel::addElement);
+        Pattern søkekriterier;
+        try {
+            søkekriterier = Pattern.compile(tekst);
+        } catch (PatternSyntaxException pse) {
+            return; // Vi kan ikke gjøre noe hvis vi ikke har et søkekriterium.
+        }
 
-        lovligeFiler.setModel(nyListModel);
+        DefaultListModel<Treff> treffModel = new DefaultListModel<>();
+
+        System.out.println("Treff:");
+        innhold.entrySet().stream()
+                .flatMap(entry -> finnTreff(entry, søkekriterier))
+                .forEach(treffModel::addElement);
+
+        treffListe.setModel(treffModel);
+        vindu.setTitle(String.format("%s: %d treff", vindustittel, treffModel.getSize()));
+    }
+
+    private Stream<Treff> finnTreff(Map.Entry<File, String> entry, Pattern søkekriterier) {
+        Matcher matcher = søkekriterier.matcher(entry.getValue());
+        return matcher.results().map(matchResult -> fraMatchResult(matchResult, entry)).filter(Objects::nonNull);
+    }
+
+    private Treff fraMatchResult(MatchResult mr, Map.Entry<File, String> oppslag) {
+        try {
+            return new Treff(mr, oppslag.getKey(), oppslag.getValue());
+        } catch(RuntimeException re) {
+            return null;
+        }
     }
 
     protected void init(JFrame hovedVindu) {
@@ -147,24 +170,22 @@ public class ProsjektFinnFilVindu {
 
         JTextField søkefelt = new JTextField(40);
 
-
-        DefaultListModel<File> fileListModel = new DefaultListModel<>();
-        fileListModel.addAll(filer);
-        lovligeFiler = new JList<>(fileListModel);
+        DefaultListModel<Treff> fileListModel = new DefaultListModel<>();
+        treffListe = new JList<>(fileListModel);
         JScrollPane filSkroller = new JScrollPane();
-        filSkroller.setViewportView(lovligeFiler);
-        lovligeFiler.setLayoutOrientation(JList.VERTICAL);
+        filSkroller.setViewportView(treffListe);
+        treffListe.setLayoutOrientation(JList.VERTICAL);
 
         // setter felles bredde
-        final int commonWidth = max(søkefelt.getPreferredSize().width, lovligeFiler.getPreferredSize().width);
+        final int commonWidth = max(søkefelt.getPreferredSize().width, treffListe.getPreferredSize().width);
         Dimension søkefeltStørrelse = søkefelt.getPreferredSize();
         søkefeltStørrelse.width = commonWidth;
         søkefelt.setMinimumSize(søkefeltStørrelse);
 
-        Dimension lovligeFilerStørrelse = lovligeFiler.getPreferredSize();
+        Dimension lovligeFilerStørrelse = treffListe.getPreferredSize();
         lovligeFilerStørrelse.width = commonWidth;
-        lovligeFiler.setMinimumSize(lovligeFilerStørrelse);
-        lovligeFiler.setFixedCellWidth(commonWidth);
+        treffListe.setMinimumSize(lovligeFilerStørrelse);
+        treffListe.setFixedCellWidth(commonWidth);
 
         panel.add(søkefelt);
         panel.add(filSkroller);
@@ -176,10 +197,10 @@ public class ProsjektFinnFilVindu {
 
         søkefelt.getDocument().addDocumentListener(reagerPåEndringer);
         søkefelt.addActionListener(reagerPåEnter);
-        lovligeFiler.addMouseListener(håndterLister);
+        treffListe.addMouseListener(håndterLister);
         KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
-        lovligeFiler.getInputMap().put(enter, "ENTER");
-        lovligeFiler.getActionMap().put("ENTER", new AbstractAction() {
+        treffListe.getInputMap().put(enter, "ENTER");
+        treffListe.getActionMap().put("ENTER", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 velgFil();
@@ -192,10 +213,10 @@ public class ProsjektFinnFilVindu {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Gir fokus til listen");
-                if(lovligeFiler.getSelectedIndex() < 0) {
-                    lovligeFiler.setSelectedIndex(0);
+                if (treffListe.getSelectedIndex() < 0) {
+                    treffListe.setSelectedIndex(0);
                 }
-                lovligeFiler.requestFocus();
+                treffListe.requestFocus();
             }
         });
 

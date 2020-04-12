@@ -1,4 +1,4 @@
-package no.haakon.jotepad.actions.files;
+package no.haakon.jotepad.actions.prosjekt;
 
 import no.haakon.jotepad.gui.components.Editor;
 import no.haakon.jotepad.gui.components.FileChooserOption;
@@ -30,9 +30,6 @@ public class SettProsjektMappe extends AbstractProsjektAction {
                 .map(File::getParent)
                 .map(File::new)
                 .orElse(new File(System.getProperty("user.home"))); // Hvis ikke det finnes en valgt fil, tar vi utgangspunkt i hjemmemappen til brukeren.
-        System.out.println("editor sin fil: " + editor.getFile().map(File::getAbsolutePath).orElse("Ingen"));
-        System.out.println("hjemmemappe: " + System.getProperty("user.home"));
-        System.out.println("valgt mappe: " + nåværendeMappe);
         JFileChooser velgMappe = new JFileChooser();
         velgMappe.setCurrentDirectory(nåværendeMappe);
         velgMappe.setDialogTitle("Velg mappe som skal indekseres");
