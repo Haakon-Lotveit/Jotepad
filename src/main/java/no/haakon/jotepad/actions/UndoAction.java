@@ -1,20 +1,19 @@
 package no.haakon.jotepad.actions;
 
-import no.haakon.jotepad.gui.components.Editor;
+import no.haakon.jotepad.gui.components.ApplicationFrame;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 public class UndoAction extends AbstractJotepadAction {
 
     public static final String COMMAND_ROOT = "ANGRE";
 
-    public UndoAction(Editor editor) {
-        super(COMMAND_ROOT, editor);
+    public UndoAction(ApplicationFrame frame) {
+        super(COMMAND_ROOT, frame);
     }
 
     @Override
     public void actionPerformed(ActionEvent ignored) {
-        editor.getUndoer().undo();
+        frame.synligBuffer().getUndoer().undo();
     }
 }

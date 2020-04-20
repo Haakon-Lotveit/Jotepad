@@ -1,18 +1,15 @@
 package no.haakon.jotepad.actions.search;
 
-import no.haakon.jotepad.gui.components.Editor;
+import no.haakon.jotepad.gui.components.ApplicationFrame;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.util.Collections;
-import java.util.Optional;
 
 public class FindTextAction extends AbstractSearchAction {
 
     public static final String COMMAND_ROOT = "SØK";
 
-    public FindTextAction(Editor editor) {
-        super(COMMAND_ROOT, editor, Collections.emptyList());
+    public FindTextAction(ApplicationFrame frame) {
+        super(COMMAND_ROOT, frame);
     }
 
     /**
@@ -22,22 +19,20 @@ public class FindTextAction extends AbstractSearchAction {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        editor.inputBox("Finn", "Søk etter:").ifPresent(this::søk);
+        frame.synligBuffer().inputBox("Finn", "Søk etter:").ifPresent(this::søk);
     }
 
 
     private void søk(final String søkEtter) {
-        final int posisjon = editor.getCaretPosition();
-        final String tekst = editor.getText();
-        final int fra = tekst.indexOf(søkEtter, posisjon);
+        final String tekst = frame.synligBuffer().getText();
+        final int fra = tekst.indexOf(søkEtter);
+        final int til = fra + tekst.length();
         if(fra < 0) {
-            editor.popupInfo("Finner ikke", "Kan ikke finne teksten din");
-            editor.setCaretPosition(posisjon);
+            frame.synligBuffer().popupInfo("Finner ikke", "Kan ikke finne teksten din");
             return;
         }
-        final int til = fra + søkEtter.length();
 
-        editor.setSelectionStart(fra);
-        editor.setSelectionEnd(til);
+        frame.synligBuffer().setSelectionStart(fra);
+        frame.synligBuffer().setSelectionEnd(til);
     }
 }

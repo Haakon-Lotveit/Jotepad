@@ -1,22 +1,20 @@
 package no.haakon.jotepad.actions.search;
 
-import no.haakon.jotepad.gui.components.Editor;
+import no.haakon.jotepad.gui.components.ApplicationFrame;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.util.Collections;
 
 public class FindNextAction extends AbstractSearchAction {
 
     public static final String COMMAND_ROOT = "SØK-FRAM";
 
-    public FindNextAction(Editor editor) {
-        super(COMMAND_ROOT, editor);
+    public FindNextAction(ApplicationFrame frame) {
+        super(COMMAND_ROOT, frame);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        getSøketype().søker(editor).searchForward(getSearchTerm());
+        getSøketype().søker(frame.synligBuffer()).searchForward(getSearchTerm());
     }
 
 

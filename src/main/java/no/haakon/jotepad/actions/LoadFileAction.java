@@ -1,25 +1,28 @@
 package no.haakon.jotepad.actions;
 
+import no.haakon.jotepad.gui.components.ApplicationFrame;
 import no.haakon.jotepad.gui.components.Editor;
-import no.haakon.jotepad.gui.components.FileChooserOption;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.util.function.Consumer;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class LoadFileAction extends AbstractJotepadAction {
 
     public static final String COMMAND_ROOT = "ÅPNE";
 
-    public LoadFileAction(Editor editor) {
-        super(COMMAND_ROOT, editor);
+    public LoadFileAction(ApplicationFrame frame) {
+        super(COMMAND_ROOT, frame);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        final Consumer<File> åpneMedUtf8 = f -> editor.loadFile(f, StandardCharsets.UTF_8);
-        editor.filDialogÅpne().ifPresent(åpneMedUtf8);
+        Editor editor = frame.synligBuffer();
+        editor.filDialogÅpne().ifPresent(this::åpneMedUtf8);
+    }
+
+    private void åpneMedUtf8(File fil) {
+        frame.nyEditorForFil(fil, UTF_8);
     }
 }

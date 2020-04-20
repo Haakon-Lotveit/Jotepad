@@ -1,21 +1,19 @@
 package no.haakon.jotepad.actions;
 
-import no.haakon.jotepad.gui.components.Editor;
+import no.haakon.jotepad.gui.components.ApplicationFrame;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.util.Arrays;
 
 public class NewFileAction extends AbstractJotepadAction {
 
     public static final String COMMAND_ROOT = "NY-FIL";
 
-    public NewFileAction(Editor editor) {
-        super(COMMAND_ROOT, editor);
+    public NewFileAction(ApplicationFrame frame) {
+        super(COMMAND_ROOT, frame);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        editor.newFile();
+        frame.nyTomBuffer();
     }
 }

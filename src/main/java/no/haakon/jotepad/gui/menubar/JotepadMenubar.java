@@ -1,11 +1,15 @@
 package no.haakon.jotepad.gui.menubar;
 
 import no.haakon.jotepad.actions.*;
+import no.haakon.jotepad.actions.buffer.ForrigeBufferAction;
+import no.haakon.jotepad.actions.buffer.ListBufferAction;
+import no.haakon.jotepad.actions.buffer.NesteBufferAction;
+import no.haakon.jotepad.actions.buffer.SlettBufferAction;
 import no.haakon.jotepad.actions.prosjekt.ProsjektFilSøkAction;
 import no.haakon.jotepad.actions.prosjekt.ProsjektTekstSøkAction;
 import no.haakon.jotepad.actions.prosjekt.SettProsjektMappe;
 import no.haakon.jotepad.actions.search.*;
-import no.haakon.jotepad.gui.components.Editor;
+import no.haakon.jotepad.gui.components.ApplicationFrame;
 
 import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;
@@ -14,16 +18,17 @@ import java.awt.event.KeyEvent;
 
 public class JotepadMenubar extends JMenuBar {
 
-    private final Editor editor;
+    private final ApplicationFrame frame;
     private final DefaultEditorKit editorKit;
 
-    public JotepadMenubar(Editor editor) {
-        this.editor = editor;
+    public JotepadMenubar(ApplicationFrame frame) {
+        this.frame = frame;
         this.editorKit = new DefaultEditorKit();
         setupFil();
         setupRediger();
         setupSøking();
         setupProsjekt();
+        setupBuffere();
     }
 
     private void setupFil() {
@@ -31,27 +36,27 @@ public class JotepadMenubar extends JMenuBar {
 
         fil.add(lagJMenuItem(
                 "Ny...",
-                new NewFileAction(editor),
+                new NewFileAction(frame),
                 KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK)));
 
         fil.add(lagJMenuItem(
                 "Åpne fil",
-                new LoadFileAction(editor),
+                new LoadFileAction(frame),
                 KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)));
 
         fil.add(lagJMenuItem(
                 "Lagre",
-                new SaveFileAction(editor),
+                new SaveFileAction(frame),
                 KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)));
 
         fil.add(lagJMenuItem(
                 "Lagre som",
-                new SaveAsAction(editor),
+                new SaveAsAction(frame),
                 KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK)));
 
         fil.add(lagJMenuItem(
                 "Avslutt",
-                new ExitAction(editor),
+                new ExitAction(frame),
                 KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK)));
 
 
@@ -63,12 +68,12 @@ public class JotepadMenubar extends JMenuBar {
 
         rediger.add(lagJMenuItem(
                 "Søk",
-                new FindTextAction(editor),
-                KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK)));
+                new FindTextAction(frame),
+                KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.ALT_DOWN_MASK)));
 
         rediger.add(lagJMenuItem(
                 "Angre",
-                new UndoAction(editor),
+                new UndoAction(frame),
                 KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK)));
 
         this.add(rediger);
@@ -79,22 +84,22 @@ public class JotepadMenubar extends JMenuBar {
 
         søking.add(lagJMenuItem(
                 "Sett søketerm [enkelt søk]",
-                new SetSearchTermAction(editor),
+                new SetSearchTermAction(frame),
                 KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK)));
 
         søking.add(lagJMenuItem(
                 "Vis søketerm",
-                new ShowSearchTermAction(editor),
+                new ShowSearchTermAction(frame),
                 KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK)));
 
         søking.add(lagJMenuItem(
                 "Finn forrige",
-                new FindPreviousAction(editor),
+                new FindPreviousAction(frame),
                 KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK)));
 
         søking.add(lagJMenuItem(
                 "Finn neste",
-                new FindNextAction(editor),
+                new FindNextAction(frame),
                 KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK)));
 
         this.add(søking);
@@ -104,18 +109,40 @@ public class JotepadMenubar extends JMenuBar {
         JMenu prosjekt = new JMenu("Prosjekt");
 
         prosjekt.add(lagJMenuItem("Sett prosjektmappe",
-                                  new SettProsjektMappe(editor),
+                                  new SettProsjektMappe(frame),
                                   KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK)));
 
         prosjekt.add(lagJMenuItem("Finn fil",
-                                  new ProsjektFilSøkAction(editor),
+                                  new ProsjektFilSøkAction(frame),
                                   KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK)));
 
         prosjekt.add(lagJMenuItem("Finn Tekst",
-                                  new ProsjektTekstSøkAction(editor),
+                                  new ProsjektTekstSøkAction(frame),
                                   KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.ALT_DOWN_MASK)));
 
         this.add(prosjekt);
+    }
+
+    private void setupBuffere() {
+        JMenu buffer = new JMenu("Buffer");
+
+        buffer.add(lagJMenuItem("Neste",
+                                new NesteBufferAction(frame),
+                                KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK)));
+
+        buffer.add(lagJMenuItem("Forrige",
+                                new ForrigeBufferAction(frame),
+                                KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK)));
+
+        buffer.add(lagJMenuItem("Vis alle",
+                                new ListBufferAction(frame),
+                                KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK)));
+
+        buffer.add(lagJMenuItem("Lukk buffer (Lagrer ikke!)",
+                                new SlettBufferAction(frame),
+                                KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK)));
+
+        this.add(buffer);
     }
 
     private JMenuItem lagJMenuItem(String navn, Action action, KeyStroke hurtigtast) {

@@ -3,20 +3,12 @@ package no.haakon.jotepad.gui.components;
 import no.haakon.jotepad.actions.undo.TestUndoer;
 
 import javax.swing.*;
-import javax.swing.undo.UndoManager;
-import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
+import java.util.*;
 import java.util.function.ToIntBiFunction;
 
 /**
@@ -30,25 +22,30 @@ import java.util.function.ToIntBiFunction;
  */
 public class Editor extends JTextArea {
 
+    private final JScrollPane scrollPane;
     private File editingFile = null;
     private final Map<String, String> state;
     private final Map<String, Map<Class<?>, Object>> objekter;
     private final TestUndoer undoer;
-    private final JFrame parentFrame;
+    private final ApplicationFrame parentFrame;
+    private String unikId = UUID.randomUUID().toString();
+    private String vennligNavn = "Navnløs";
 
-    public Editor(JFrame parentFrame) {
+    public Editor(ApplicationFrame parentFrame) {
         super();
+        this.scrollPane = new EditorScrollPane(this);
         this.state = new HashMap<>();
         this.objekter = new HashMap<>();
         undoer = new TestUndoer(this);
         this.getDocument().addUndoableEditListener(undoer);
         this.parentFrame = parentFrame;
+        parentFrame.addEditor(this);
     }
 
     /**
-     * @return the JFrame that contains the editor.
+     * @return the frame that contains the editor.
      */
-    public JFrame getParentFrame() {
+    public ApplicationFrame getParentFrame() {
         return parentFrame;
     }
     /**
@@ -59,17 +56,11 @@ public class Editor extends JTextArea {
     }
 
     /**
-     * Creates a scollpane with this component as scrollable.
+     * Returns a scollpane with this component as scrollable.
      *
-     * @return a new JScrollPane (every time) with this component set.
+     * @return a JScrollPane with this component set. Will be reused
      */
     public JScrollPane getInScrollPane() {
-        JScrollPane scrollPane = new JScrollPane(this);
-        scrollPane.createHorizontalScrollBar();
-        scrollPane.createVerticalScrollBar();
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
         return scrollPane;
     }
 
@@ -80,6 +71,7 @@ public class Editor extends JTextArea {
     public Editor setFile(File file) {
         Objects.requireNonNull(file, "Cannot set the currently editing file to null.");
         this.editingFile = file;
+        this.vennligNavn = file.getAbsolutePath();
         return this;
     }
 
@@ -107,13 +99,14 @@ public class Editor extends JTextArea {
             }
             this.setText(contents);
             this.setFile(file); // Vi kan ikke sette filen før nå, fordi det er først nå vi vet at alt har gått bra...
-            requestFocus();
-            setCaretPosition(0);
         } catch (FileNotFoundException fnfe) {
             System.err.println("fant ikke filen"); // TODO: Dette må opplagt håndteres på en bedre måte...
         } catch (IOException ioe) {
             System.err.println("noe gikk galt: " + ioe);
         }
+        requestFocus();
+        setCaretPosition(0);
+        undoer.nullstill();
     }
 
     public void newFile() {
@@ -196,25 +189,16 @@ public class Editor extends JTextArea {
         }
     }
 
-    public Editor setValue(String key, String value) {
-        state.put(key, value);
-        return this;
+    public String getId() {
+        return unikId;
     }
 
-    // Dette er gjort i Effective Java et sted. Jeg trenger bare et sted å dumpe noe global state før Alex Jones ser det.
-    // WHUH? GLOBALISM?! AAAAARG! - Alex Jones
-    public String getValue(String key) {
-        return state.get(key);
+    public String getVennligNavn() {
+        return vennligNavn;
     }
 
-    public <T> Editor setTypedObject(Class<T> klasse, String navn, T objekt) {
-//        private final Map<String, Map<Class<?>, Object>> objekter;
-        objekter.computeIfAbsent(navn, ignored -> new HashMap<>()).put(klasse, objekt);
-        return this;
-    }
-
-    public <T> T getTypedObject(Class<T> klasse, String navn) {
-        // garantert å være av type T gitt at eneste skriving skjer via setTypedObject.
-        return (T) objekter.getOrDefault(navn, new HashMap<>()).get(klasse);
+    public JaNeiValg jaNeiPopup(String tittel, String melding) {
+        int choice = JOptionPane.showConfirmDialog(this, melding, tittel, JOptionPane.YES_NO_OPTION);
+        return JaNeiValg.fraInt(choice);
     }
 }

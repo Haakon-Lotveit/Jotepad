@@ -1,14 +1,10 @@
 package no.haakon.jotepad.start;
 
-import no.haakon.jotepad.actions.*;
-import no.haakon.jotepad.actions.search.*;
 import no.haakon.jotepad.gui.components.ApplicationFrame;
 import no.haakon.jotepad.gui.components.Editor;
 import no.haakon.jotepad.gui.menubar.JotepadMenubar;
 
 import javax.swing.*;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.util.Arrays;
 
 /**
@@ -43,11 +39,6 @@ public class Jotepad {
         }
         ApplicationFrame applicationFrame = new ApplicationFrame();
 
-        Editor editor = new Editor(applicationFrame);
-
-        applicationFrame.setJMenuBar(new JotepadMenubar(editor));
-        JScrollPane editorPane = editor.getInScrollPane();
-        applicationFrame.getContentPane().add(editorPane);
         applicationFrame.pack();
         applicationFrame.sentrerPåSkjerm();
         applicationFrame.setVisible(true);

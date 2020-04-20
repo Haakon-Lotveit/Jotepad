@@ -1,8 +1,6 @@
 package no.haakon.jotepad.gui.components;
 
 import javax.swing.*;
-import java.io.File;
-import java.util.Optional;
 
 /**
  * Wrapper resultatet fra JFileChooser, så vi ender opp med enumer istedenfor int-verdier.

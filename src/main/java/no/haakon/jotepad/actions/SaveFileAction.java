@@ -1,19 +1,15 @@
 package no.haakon.jotepad.actions;
 
-import no.haakon.jotepad.gui.components.Editor;
+import no.haakon.jotepad.gui.components.ApplicationFrame;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 final public class SaveFileAction extends AbstractSaveAction {
 
     public static final String COMMAND_ROOT = "LAGRE";
 
-    public SaveFileAction(Editor editor) {
-        super(COMMAND_ROOT, editor);
-    }
-    public SaveFileAction(Editor editor, KeyStroke shortcut) {
-        super(COMMAND_ROOT, editor, shortcut);
+    public SaveFileAction(ApplicationFrame frame) {
+        super(COMMAND_ROOT, frame);
     }
 
     /**
@@ -24,6 +20,6 @@ final public class SaveFileAction extends AbstractSaveAction {
      */
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        editor.getFile().ifPresentOrElse(this::save, this::selectNewFile);
+        frame.synligBuffer().getFile().ifPresentOrElse(this::save, this::selectNewFile);
     }
 }

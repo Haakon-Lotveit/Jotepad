@@ -12,8 +12,6 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -113,7 +111,7 @@ public class ProsjektSøkTekstVindu {
                 // Merk at det ikke er en break, så ting hopper bare videre.
                 // Dette er bare jeg som syntes det var gøy, og jeg ville ikke gjort dette på jobb, så å si.
             default:
-                assosiertEditor.loadFile(treffListe.getSelectedValue().getFil(), StandardCharsets.UTF_8);
+                assosiertEditor.getParentFrame().nyEditorForFil(treffListe.getSelectedValue().getFil(), StandardCharsets.UTF_8);
                 lukkVindu();
         }
     }
@@ -123,7 +121,7 @@ public class ProsjektSøkTekstVindu {
     }
 
     public void oppdaterTreff(String tekst) {
-        if(tekst.length() < 3) {
+        if(tekst.length() < 2) {
             // dette er for knotete å søke etter!
             treffListe.setModel(new DefaultListModel<>());
             vindu.setTitle(vindustittel);
@@ -162,7 +160,7 @@ public class ProsjektSøkTekstVindu {
     }
 
     protected void init(JFrame hovedVindu) {
-        vindu = new JFrame("Finn fil i prosjekt");
+        vindu = new JFrame(vindustittel);
         JPanel panel = new JPanel();
         vindu.add(panel);
         BoxLayout manager = new BoxLayout(panel, BoxLayout.Y_AXIS);

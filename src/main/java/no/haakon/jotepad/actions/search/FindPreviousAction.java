@@ -1,21 +1,19 @@
 package no.haakon.jotepad.actions.search;
 
-import no.haakon.jotepad.gui.components.Editor;
+import no.haakon.jotepad.gui.components.ApplicationFrame;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.util.Collection;
 
 public class FindPreviousAction extends AbstractSearchAction {
 
     public static final String COMMAND_ROOT = "SØK-BAK";
 
-    public FindPreviousAction(Editor editor) {
-        super(COMMAND_ROOT, editor);
+    public FindPreviousAction(ApplicationFrame frame) {
+        super(COMMAND_ROOT, frame);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        getSøketype().søker(editor).searchBackwards(getSearchTerm());
+        getSøketype().søker(frame.synligBuffer()).searchBackwards(getSearchTerm());
     }
 }

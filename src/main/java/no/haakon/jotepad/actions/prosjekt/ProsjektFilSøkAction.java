@@ -1,13 +1,12 @@
 package no.haakon.jotepad.actions.prosjekt;
 
-import no.haakon.jotepad.gui.components.Editor;
+import no.haakon.jotepad.gui.components.ApplicationFrame;
 import no.haakon.jotepad.gui.components.ProsjektFinnFilVindu;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.Set;
-import java.util.stream.Stream;
 
 /**
  * Disse kommandoene setter en mappe til å være hjemmet til et prosjekt.
@@ -17,28 +16,8 @@ public class ProsjektFilSøkAction extends AbstractProsjektAction {
 
     public static String COMMAND_ROOT = "PROSJEKT_FINN_FIL";
 
-    /**
-     * Oppretter en ProsjektFilSøkAction.
-     * <p>
-     * This makes inheriting from the abstract class a bit simpler, since you can specify all sorts of constructors yourself, depending on need.
-     *
-     * @param editor      The Editor that this action is supposed to be bound to. Note that it might <i>also</i>
-     *                    be bound to the menubar. But that's more about the frame having actions injected.
-     * @param shortcuts   The keyboard shortcuts you want to use. Note that there is ZERO attempt at having these be
-     */
-    public ProsjektFilSøkAction(Editor editor, Stream<KeyStroke> shortcuts) {
-        super(COMMAND_ROOT, editor, shortcuts);
-    }
-
-    /**
-     * <p>
-     * This makes inheriting from the abstract class a bit simpler, since you can specify all sorts of constructors yourself, depending on need.
-     *
-     * @param editor      The Editor that this action is supposed to be bound to. Note that it might <i>also</i>
-     *                    be bound to the menubar. But that's more about the frame having actions injected.
-     */
-    public ProsjektFilSøkAction(Editor editor) {
-        this(editor, Stream.empty());
+    public ProsjektFilSøkAction(ApplicationFrame frame) {
+        super(COMMAND_ROOT, frame);
     }
 
 
@@ -49,7 +28,7 @@ public class ProsjektFilSøkAction extends AbstractProsjektAction {
         }
         Set<File> gyldigeFiler = getSøkbareFiler();
 
-        SwingUtilities.invokeLater(() -> new ProsjektFinnFilVindu(getSøkbareFiler(), editor));
+        SwingUtilities.invokeLater(() -> new ProsjektFinnFilVindu(getSøkbareFiler(), frame.synligBuffer()));
     }
 
 }

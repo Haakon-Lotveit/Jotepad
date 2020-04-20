@@ -1,14 +1,12 @@
 package no.haakon.jotepad.actions.prosjekt;
 
-import no.haakon.jotepad.gui.components.Editor;
+import no.haakon.jotepad.gui.components.ApplicationFrame;
 import no.haakon.jotepad.gui.components.FileChooserOption;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * Setter hvilken mappe som skal indekseres for å finne filer.
@@ -17,16 +15,13 @@ public class SettProsjektMappe extends AbstractProsjektAction {
 
     public static final String COMMAND_ROOT = "SETT_FILINDEKS";
 
-    public SettProsjektMappe(Editor editor, Collection<KeyStroke> shortcuts) {
-        super(COMMAND_ROOT, editor, shortcuts.stream());
-    }
-    public SettProsjektMappe(Editor editor) {
-        super(COMMAND_ROOT, editor, Stream.empty());
+    public SettProsjektMappe(ApplicationFrame editor) {
+        super(COMMAND_ROOT, editor);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        File nåværendeMappe = editor.getFile()
+        File nåværendeMappe = frame.synligBuffer().getFile()
                 .map(File::getParent)
                 .map(File::new)
                 .orElse(new File(System.getProperty("user.home"))); // Hvis ikke det finnes en valgt fil, tar vi utgangspunkt i hjemmemappen til brukeren.
@@ -38,7 +33,7 @@ public class SettProsjektMappe extends AbstractProsjektAction {
 
         // For at dette skal bli ordentlig bør JFileChooser wrappes kjærlig i en annen klasse.
         Optional<File> valgresultat = null;
-        switch (FileChooserOption.from(velgMappe.showOpenDialog(editor))) {
+        switch (FileChooserOption.from(velgMappe.showOpenDialog(frame.synligBuffer()))) {
             case APPROVE:
                 File valgtFil = velgMappe.getSelectedFile();
                 System.out.println("Har valgt fil: " + valgtFil.getAbsolutePath());
@@ -62,9 +57,9 @@ public class SettProsjektMappe extends AbstractProsjektAction {
             return; // ingenting å gjøre, ingenting ble valgt...
         }
 
-        editor.setValue(NØKKEL_INDEKSERT_MAPPE, valgresultat.get().getAbsolutePath());
+        frame.setValue(NØKKEL_INDEKSERT_MAPPE, valgresultat.get().getAbsolutePath());
 
-        System.out.println("Satt mappe til: " + editor.getValue(NØKKEL_INDEKSERT_MAPPE));
+        System.out.println("Satt mappe til: " + frame.getValue(NØKKEL_INDEKSERT_MAPPE));
         oppdaterFilIndeks();
     }
 }

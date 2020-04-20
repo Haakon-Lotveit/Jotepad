@@ -38,6 +38,9 @@ public class TestUndoer implements UndoableEditListener {
         editManager.undo();
     }
 
+    public void nullstill() {
+        editManager = new CompoundedEditManager();
+    }
     @Override
     public void undoableEditHappened(UndoableEditEvent e) {
         editManager.receiveUndoableEdit(e.getEdit());
