@@ -3,6 +3,8 @@ package no.haakon.jotepad.actions;
 import no.haakon.jotepad.gui.components.ApplicationFrame;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.util.function.Consumer;
 
 final public class SaveFileAction extends AbstractSaveAction {
 
@@ -20,6 +22,7 @@ final public class SaveFileAction extends AbstractSaveAction {
      */
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        frame.synligBuffer().getFile().ifPresentOrElse(this::save, this::selectNewFile);
+        Consumer<File> lagre = (ignored) -> frame.synligBuffer().save();
+        frame.synligBuffer().getFil().ifPresentOrElse(lagre, this::selectNewFile);
     }
 }

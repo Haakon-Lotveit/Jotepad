@@ -1,58 +1,58 @@
 package no.haakon.jotepad.actions.search;
 
-import no.haakon.jotepad.gui.components.Editor;
+import no.haakon.jotepad.model.buffer.AbstractTekstBuffer;
 
-import java.util.Optional;
+import java.util.OptionalInt;
 
 public class SimpleSearcher implements Searcher {
 
-    private final Editor editor;
+    private final AbstractTekstBuffer buffer;
 
-    public SimpleSearcher(Editor editor) {
-        this.editor = editor;
+    public SimpleSearcher(AbstractTekstBuffer editor) {
+        this.buffer = editor;
     }
 
     @Override
     public void searchForward(String søkEtter) {
-        final int posisjon = editor.getCaretPosition();
-        final String tekst = editor.getText();
+        final int posisjon = buffer.getEditor().getMarkørPosisjon();
+        final String tekst = buffer.getEditor().getTekst();
         final int fra = tekst.indexOf(søkEtter, posisjon);
         if(fra < 0) {
             finnerIkkePopup();
-            editor.setCaretPosition(posisjon);
+            buffer.getComponent().setCaretPosition(posisjon);
             return;
         }
         final int til = fra + søkEtter.length();
 
-        editor.setSelectionStart(fra);
-        editor.setSelectionEnd(til);
+        buffer.getComponent().setSelectionStart(fra);
+        buffer.getComponent().setSelectionEnd(til);
     }
 
     @Override
     public void searchBackwards(String term) {
-        final int posisjon = editor.getCaretPosition();
+        final int posisjon = buffer.getEditor().getMarkørPosisjon();
 
         // Hvis en tekstbit er valgt, så søker vi FØR den valgte tekstbiten.
-        int effektivPosisjon = posisjon - Optional.ofNullable(editor.getSelectedText()).orElse("").length();
+        int effektivPosisjon = posisjon - this.buffer.getEditor().getValgTekst().length();
 
-        final String tekst = editor.getText().substring(0, effektivPosisjon);
+        final String tekst = buffer.getEditor().getTekst().substring(0, effektivPosisjon);
         final int fra = tekst.lastIndexOf(term);
         final int til = fra + term.length();
 
         if(fra < 0) {
             finnerIkkePopup();
-            editor.setCaretPosition(effektivPosisjon);
+            buffer.getComponent().setCaretPosition(effektivPosisjon);
             return;
         }
 
-        editor.setSelectionStart(fra);
-        editor.setSelectionEnd(til);
+        buffer.getComponent().setSelectionStart(fra);
+        buffer.getComponent().setSelectionEnd(til);
 
     }
 
 
     private void finnerIkkePopup() {
-        editor.popupInfo("Finner ikke", "Kan ikke finne teksten din");
+        buffer.guiHelpers().popupInfo("Finner ikke", "Kan ikke finne teksten din");
     }
 
 }

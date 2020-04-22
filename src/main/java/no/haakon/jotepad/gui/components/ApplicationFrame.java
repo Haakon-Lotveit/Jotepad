@@ -1,12 +1,14 @@
 package no.haakon.jotepad.gui.components;
 
 import no.haakon.jotepad.gui.menubar.JotepadMenubar;
-import no.haakon.jotepad.model.Buffer;
+import no.haakon.jotepad.model.buffer.Buffer;
+import no.haakon.jotepad.model.buffer.BufferFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -16,12 +18,12 @@ import java.util.stream.Collectors;
 public class ApplicationFrame extends JFrame {
 
     public static final String TITLE = "Jotepad";
-    private Map<String, Buffer> buffere = new TreeMap<>();
     private Buffer currentBuffer = null;
     private final CardLayout layout;
     private final JPanel panel;
     private Map<String, String> state = new HashMap<>();
     private Map<String, Map<Class<?>, Object>> typedState = new HashMap<>();
+    private BufferFactory bufferFactory;
 
     public ApplicationFrame() {
         super();
@@ -29,6 +31,7 @@ public class ApplicationFrame extends JFrame {
         panel = new JPanel(layout);
         this.add(panel);
 
+        this.bufferFactory = new BufferFactory(this);
         nyTomBuffer();
 
         setJMenuBar(new JotepadMenubar(this));
@@ -44,15 +47,15 @@ public class ApplicationFrame extends JFrame {
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
     }
 
-    public void addEditor(Editor editor) {
-        panel.add(editor.getInScrollPane(), editor.getId());
-        visEditor(editor);
+    public void addBuffer(Buffer buffer) {
+        panel.add(buffer.getSkroller(), buffer.getUnikId());
+        visBuffer(buffer);
     }
 
-    public void visEditor(Editor editor) {
-        System.out.printf("Prøver å vise editor '%s', med unik id '%s'%n", editor.getVennligNavn(), editor.getId());
-        layout.show(panel, editor.getId()); // Merk at id her deler navn med JSCrollPane sitt navn...
-        oppdaterTittel(editor);
+    public void visBuffer(Buffer buffer) {
+        System.out.printf("Prøver å vise buffer '%s', med unik id '%s'%n", buffer.getBufferNavn(), buffer.getUnikId());
+        layout.show(panel, buffer.getUnikId()); // Merk at id her deler navn med JSCrollPane sitt navn...
+        oppdaterTittel(buffer);
     }
 
     public void visForrigeBuffer() {
@@ -79,36 +82,36 @@ public class ApplicationFrame extends JFrame {
         layout.show(panel, navn);
     }
 
-    public Collection<Editor> getBuffere() {
+    public Collection<Buffer> getBuffere() {
         return Arrays.stream(panel.getComponents())
-                .filter(c -> c instanceof EditorScrollPane)
-                .map(EditorScrollPane.class::cast)
-                .map(EditorScrollPane::getEditor)
+                .filter(c -> c instanceof BufferSkroller)
+                .map(BufferSkroller.class::cast)
+                .map(BufferSkroller::getBuffer)
                 .collect(Collectors.toList());
         // Ugh.
     }
 
-    public void nyEditorForFil(File fil, Charset charset) {
-        Editor editor = new Editor(this);
-        editor.loadFile(fil, charset);
-        addEditor(editor);
+    public void åpneFil(File fil, Charset charset) {
+        bufferFactory.createBuffer(fil, Map.of("charset", charset))
+                .ifPresentOrElse(this::addBuffer,
+                                 () -> System.err.println("Kunne ikke åpne fil " + fil.getAbsolutePath()));
     }
 
-    private void oppdaterTittel(Editor editor) {
-         oppdaterTittel(editor.getVennligNavn());
+    private void oppdaterTittel(Buffer buffer) {
+         oppdaterTittel(buffer.getBufferNavn());
     }
 
     private void oppdaterTittel() {
-        String tittel = synligBuffer().getVennligNavn();
+        String tittel = synligBuffer().getBufferNavn();
         oppdaterTittel(tittel);
     }
 
-    public Editor synligBuffer() {
+    public Buffer synligBuffer() {
         return Arrays.stream(panel.getComponents())
                 .filter(Component::isVisible)
-                .filter(c -> c instanceof EditorScrollPane)
-                .map(EditorScrollPane.class::cast)
-                .map(EditorScrollPane::getEditor).findAny()
+                .filter(c -> c instanceof BufferSkroller)
+                .map(BufferSkroller.class::cast)
+                .map(BufferSkroller::getBuffer).findAny()
                 .get(); // Det skal ALLTID være en og bare en som dette er gyldig for.
     }
 
@@ -116,7 +119,7 @@ public class ApplicationFrame extends JFrame {
         setTitle(String.format("%s - %s", TITLE, suffix));
     }
 
-    public void lukkBuffer(Editor editor) {
+    public void lukkBuffer(Buffer buffer) {
         if(getBuffere().size() <= 1) {
             // det er siste, så vi må være litt varsomme...
             nyTomBuffer();
@@ -124,7 +127,7 @@ public class ApplicationFrame extends JFrame {
         else {
             visNesteBuffer();
         }
-            panel.remove(editor.getInScrollPane());
+            panel.remove(buffer.getSkroller());
     }
 
     public void lukkSynligBuffer() {
@@ -132,8 +135,7 @@ public class ApplicationFrame extends JFrame {
     }
 
     public void nyTomBuffer() {
-        Editor tom = new Editor(this);
-        this.addEditor(tom);
+        addBuffer(bufferFactory.tomBuffer());
     }
 
     // Håndterer state som ymse kommandoer og lignende trenger å sette...

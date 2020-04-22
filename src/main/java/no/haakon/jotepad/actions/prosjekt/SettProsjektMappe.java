@@ -21,7 +21,7 @@ public class SettProsjektMappe extends AbstractProsjektAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        File nåværendeMappe = frame.synligBuffer().getFile()
+        File nåværendeMappe = frame.synligBuffer().getFil()
                 .map(File::getParent)
                 .map(File::new)
                 .orElse(new File(System.getProperty("user.home"))); // Hvis ikke det finnes en valgt fil, tar vi utgangspunkt i hjemmemappen til brukeren.
@@ -33,7 +33,7 @@ public class SettProsjektMappe extends AbstractProsjektAction {
 
         // For at dette skal bli ordentlig bør JFileChooser wrappes kjærlig i en annen klasse.
         Optional<File> valgresultat = null;
-        switch (FileChooserOption.from(velgMappe.showOpenDialog(frame.synligBuffer()))) {
+        switch (FileChooserOption.from(velgMappe.showOpenDialog(frame))) {
             case APPROVE:
                 File valgtFil = velgMappe.getSelectedFile();
                 System.out.println("Har valgt fil: " + valgtFil.getAbsolutePath());

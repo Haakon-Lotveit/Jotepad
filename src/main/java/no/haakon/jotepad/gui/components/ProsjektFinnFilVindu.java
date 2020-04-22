@@ -11,21 +11,23 @@ import java.util.regex.Pattern;
  */
 public class ProsjektFinnFilVindu extends NarrowingInputList<File> {
 
-    public ProsjektFinnFilVindu(Collection<File> elementerTilListen, Editor assosiertEditor) {
-        super("Finn fil i prosjektet", elementerTilListen, assosiertEditor);
+    public ProsjektFinnFilVindu(Collection<File> elementerTilListen, ApplicationFrame frame) {
+        super("Finn fil i prosjektet", elementerTilListen, frame);
     }
 
     @Override
     protected void gjørValg() {
         final int index = Integer.max(nåværendeUtvalg.getSelectedIndex(), 0);
-        Optional.ofNullable(this.nåværendeUtvalg.getModel().getElementAt(index)).map(ListRepresentation::getElement).ifPresent(f -> {
+        Optional.ofNullable(this.nåværendeUtvalg.getModel())
+                .map(m -> m.getElementAt(index))
+                .map(ListRepresentation::getElement).ifPresent(f -> {
                     åpneFil(f);
                     this.lukkVindu();
                 });
     }
 
     public void åpneFil(File fil) {
-        assosiertEditor.getParentFrame().nyEditorForFil(fil, StandardCharsets.UTF_8);
+        frame.åpneFil(fil, StandardCharsets.UTF_8);
     }
 
     @Override

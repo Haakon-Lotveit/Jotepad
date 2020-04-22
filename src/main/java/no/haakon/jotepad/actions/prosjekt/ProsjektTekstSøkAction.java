@@ -20,7 +20,7 @@ public class ProsjektTekstSøkAction extends AbstractProsjektAction {
             return;
         }
 
-        SwingUtilities.invokeLater(() -> new ProsjektSøkTekstVindu(getIndeksertInnhold(), frame.synligBuffer()));
+        SwingUtilities.invokeLater(() -> new ProsjektSøkTekstVindu(getIndeksertInnhold(), frame));
     }
 
 }

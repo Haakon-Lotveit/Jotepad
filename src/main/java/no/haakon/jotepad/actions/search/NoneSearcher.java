@@ -1,10 +1,8 @@
 package no.haakon.jotepad.actions.search;
 
-import no.haakon.jotepad.gui.components.Editor;
-
 public class NoneSearcher implements Searcher {
 
-    public NoneSearcher(Editor ignored) {}
+    public NoneSearcher(Object ignored) {}
 
     @Override
     public void searchForward(String term) {

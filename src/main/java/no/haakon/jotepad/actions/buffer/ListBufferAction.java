@@ -2,7 +2,7 @@ package no.haakon.jotepad.actions.buffer;
 
 import no.haakon.jotepad.gui.components.ApplicationFrame;
 import no.haakon.jotepad.gui.components.BufferFinnBufferVindu;
-import no.haakon.jotepad.gui.components.Editor;
+import no.haakon.jotepad.model.buffer.Buffer;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -18,8 +18,7 @@ public class ListBufferAction extends AbstractBufferAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Collection<Editor> buffere = frame.getBuffere();
 
-        SwingUtilities.invokeLater(() -> new BufferFinnBufferVindu(buffere, frame.synligBuffer()));
+        SwingUtilities.invokeLater(() -> new BufferFinnBufferVindu(frame.getBuffere(), frame));
     }
 }

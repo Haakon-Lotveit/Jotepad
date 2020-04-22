@@ -23,8 +23,8 @@ import static java.lang.Integer.max;
 public class ProsjektSøkTekstVindu {
 
     private static final String vindustittel = "Søkeresultater";
-    private final Editor assosiertEditor;
     private final Map<File, String> innhold;
+    private final ApplicationFrame frame;
     private JList<Treff> treffListe;
     private JFrame vindu;
 
@@ -93,10 +93,10 @@ public class ProsjektSøkTekstVindu {
     };
 
     // TODO: Kopiert over fra PFFV.java, må fikses senere.
-    public ProsjektSøkTekstVindu(Map<File, String> innhold, Editor assosiertEditor) {
+    public ProsjektSøkTekstVindu(Map<File, String> innhold, ApplicationFrame frame) {
         this.innhold = innhold;
-        this.assosiertEditor = assosiertEditor;
-        init(assosiertEditor.getParentFrame());
+        this.frame = frame;
+        init(frame);
     }
 
     private void velgFil() {
@@ -111,7 +111,7 @@ public class ProsjektSøkTekstVindu {
                 // Merk at det ikke er en break, så ting hopper bare videre.
                 // Dette er bare jeg som syntes det var gøy, og jeg ville ikke gjort dette på jobb, så å si.
             default:
-                assosiertEditor.getParentFrame().nyEditorForFil(treffListe.getSelectedValue().getFil(), StandardCharsets.UTF_8);
+                frame.åpneFil(treffListe.getSelectedValue().getFil(), StandardCharsets.UTF_8);
                 lukkVindu();
         }
     }

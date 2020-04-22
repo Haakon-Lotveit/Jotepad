@@ -1,6 +1,6 @@
 package no.haakon.jotepad.actions.undo;
 
-import no.haakon.jotepad.gui.components.Editor;
+import no.haakon.jotepad.model.editor.TekstEditor;
 
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -24,12 +24,12 @@ import javax.swing.event.UndoableEditListener;
  *
  *  For å håndtere dette med tid, har vi nok et objekt, som heter TimestampedEdit. Dette er en enkel klasse som tar imot en hendelse og putter på et timestamp. Enkelt og greit.
  */
-public class TestUndoer implements UndoableEditListener {
+public class TekstUndoer implements UndoableEditListener {
 
-    Editor editor;
+    TekstEditor editor;
     CompoundedEditManager editManager = new CompoundedEditManager();
 
-    public TestUndoer(Editor editor) {
+    public TekstUndoer(TekstEditor editor) {
         super();
         this.editor = editor;
     }

@@ -14,6 +14,6 @@ public class UndoAction extends AbstractJotepadAction {
 
     @Override
     public void actionPerformed(ActionEvent ignored) {
-        frame.synligBuffer().getUndoer().undo();
+        frame.synligBuffer().getEditor().undo();
     }
 }

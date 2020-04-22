@@ -15,11 +15,10 @@ import static java.lang.Integer.max;
 
 public abstract class NarrowingInputList<T> {
     protected final Collection<T> listen;
-    protected final Editor assosiertEditor;
     private final String opprinneligTittel;
+    protected final ApplicationFrame frame;
     protected JList<ListRepresentation<T>> nåværendeUtvalg;
     protected JFrame vindu;
-
 
     // Lys, Kamera, ACTION!
     private final ActionListener reagerPåEnter = new ActionListener() {
@@ -85,11 +84,11 @@ public abstract class NarrowingInputList<T> {
         }
     };
 
-    public NarrowingInputList(String tittel, Collection<T> elementerTilListen, Editor assosiertEditor) {
+    public NarrowingInputList(String tittel, Collection<T> elementerTilListen, ApplicationFrame frame) {
         this.listen = elementerTilListen;
-        this.assosiertEditor = assosiertEditor;
         this.opprinneligTittel = tittel;
-        init(assosiertEditor.getParentFrame());
+        this.frame = frame;
+        init(frame);
     }
 
     /**

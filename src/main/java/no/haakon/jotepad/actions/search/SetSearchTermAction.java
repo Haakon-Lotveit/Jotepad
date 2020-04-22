@@ -19,6 +19,6 @@ public class SetSearchTermAction extends AbstractSearchAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        frame.synligBuffer().inputBox("Søketerm", "Hva vil du søke etter? ").ifPresent(this::setSimpleSearchTerm);
+        frame.synligBuffer().guiHelpers().inputBox("Søketerm", "Hva vil du søke etter? ").ifPresent(this::setSimpleSearchTerm);
     }
 }

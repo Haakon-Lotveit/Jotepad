@@ -80,7 +80,7 @@ public abstract class AbstractProsjektAction extends AbstractJotepadAction {
     protected boolean mappeHarBlittSatt() {
         if(frame.getValue(NØKKEL_INDEKSERT_MAPPE) == null) {
             System.err.println("Ingen mappe indeksert, kan ikke gjøre noe enda.");
-            frame.synligBuffer().popupError("Ingen mappe satt", "Ingen mappe satt som prosjektmappe. Sett denne først.");
+            frame.synligBuffer().guiHelpers().popupError("Ingen mappe satt", "Ingen mappe satt som prosjektmappe. Sett denne først.");
             return false;
         }
         return true;

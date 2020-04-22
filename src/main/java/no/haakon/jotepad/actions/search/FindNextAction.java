@@ -1,6 +1,7 @@
 package no.haakon.jotepad.actions.search;
 
 import no.haakon.jotepad.gui.components.ApplicationFrame;
+import no.haakon.jotepad.model.buffer.AbstractTekstBuffer;
 
 import java.awt.event.ActionEvent;
 
@@ -14,7 +15,9 @@ public class FindNextAction extends AbstractSearchAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        getSøketype().søker(frame.synligBuffer()).searchForward(getSearchTerm());
+        if(frame.synligBuffer() instanceof AbstractTekstBuffer) {
+            getSøketype().søker((AbstractTekstBuffer) frame.synligBuffer()).searchForward(getSearchTerm());
+        }
     }
 
 

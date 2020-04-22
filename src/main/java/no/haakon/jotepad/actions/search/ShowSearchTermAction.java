@@ -16,10 +16,10 @@ public class ShowSearchTermAction extends AbstractSearchAction {
     public void actionPerformed(ActionEvent e) {
         String searchTerm = getSearchTerm();
         if(searchTerm == null) {
-            frame.synligBuffer().popupInfo("Søketerm", "Ingen søketerm har blitt satt");
+            frame.synligBuffer().guiHelpers().popupInfo("Søketerm", "Ingen søketerm har blitt satt");
             return;
         }
 
-        frame.synligBuffer().popupInfo("Søketerm", "Søketerm: " + searchTerm);
+        frame.synligBuffer().guiHelpers().popupInfo("Søketerm", "Søketerm: " + searchTerm);
     }
 }

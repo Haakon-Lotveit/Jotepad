@@ -1,13 +1,13 @@
 package no.haakon.jotepad.actions.search;
 
-import no.haakon.jotepad.gui.components.Editor;
+import no.haakon.jotepad.model.buffer.Buffer;
 
 public class RegexSearcher implements Searcher {
 
-    private final Editor editor;
+    private final Buffer buffer;
 
-    public RegexSearcher(Editor editor) {
-        this.editor = editor;
+    public RegexSearcher(Buffer buffer) {
+        this.buffer = buffer;
     }
 
     @Override

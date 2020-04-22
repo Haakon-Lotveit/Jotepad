@@ -28,7 +28,7 @@ public class ProsjektFilSøkAction extends AbstractProsjektAction {
         }
         Set<File> gyldigeFiler = getSøkbareFiler();
 
-        SwingUtilities.invokeLater(() -> new ProsjektFinnFilVindu(getSøkbareFiler(), frame.synligBuffer()));
+        SwingUtilities.invokeLater(() -> new ProsjektFinnFilVindu(getSøkbareFiler(), frame));
     }
 
 }
