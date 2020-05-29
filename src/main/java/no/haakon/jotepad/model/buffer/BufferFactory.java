@@ -1,6 +1,9 @@
 package no.haakon.jotepad.model.buffer;
 
 import no.haakon.jotepad.gui.components.ApplicationFrame;
+import no.haakon.jotepad.model.buffer.bilde.BildeBuffer;
+import no.haakon.jotepad.model.buffer.tabell.TabellBuffer;
+import no.haakon.jotepad.model.buffer.tekst.BasicTextBuffer;
 
 import java.io.File;
 import java.util.*;
@@ -17,6 +20,9 @@ public class BufferFactory {
 
     public BufferFactory(ApplicationFrame frame) {
         this.frame = frame;
+        // registrerer bildetyper.
+        BildeBuffer.støttedeFiler().forEach(pattern -> buffertyper.put(pattern, BildeBuffer::new));
+        TabellBuffer.støttedeFiler().forEach(pattern -> buffertyper.put(pattern, TabellBuffer::new));
     }
 
     /**

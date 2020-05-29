@@ -2,12 +2,14 @@ package no.haakon.jotepad.model.buffer;
 
 import no.haakon.jotepad.gui.components.ApplicationFrame;
 import no.haakon.jotepad.gui.components.BufferSkroller;
+import no.haakon.jotepad.kommando.Kommando;
 import no.haakon.jotepad.model.editor.Editor;
 import no.haakon.jotepad.model.GuiHelpers;
 
 import javax.swing.*;
 import java.io.File;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * En buffer er en klasse som holder på ting som skal redigeres.
@@ -33,23 +35,39 @@ public abstract class Buffer {
 
     private final Map<String, String> state;
     private final Map<String, Map<Class<?>, Object>> objekter;
+    private static final Map<String, List<Kommando>> kommandoerForType = new HashMap<>();
 
     public static final String APPLICATION_FRAME = "APPFRAME";
+    protected File fil;
+    protected final ApplicationFrame frame;
+    private final GuiHelpers guiHelpers;
 
-    public abstract Optional<File> getFil();
+    public Optional<File> getFil() {
+        return Optional.ofNullable(fil);
+    }
+
+
     public abstract String getTypeNavn();
-    public abstract String getBufferNavn();
     public abstract void die();
     public abstract JComponent getComponent();
     public abstract Editor getEditor();
-    public abstract void save();
-    public abstract GuiHelpers guiHelpers(); // TODO: Burde kanskje opprettes her.
+    public abstract byte[] filInnhold();
 
-    protected Buffer() {
+    protected Buffer(File fil, Map<String, Object> args) {
         state = new HashMap<>();
         objekter = new HashMap<>();
+        this.fil = fil;
+        this.frame = fetchFrame(args);
+        this.guiHelpers = new GuiHelpers(frame);
     }
 
+    public GuiHelpers guiHelpers() {
+        return guiHelpers;
+    }
+
+    public String getBufferNavn() {
+        return String.format("%s: %s", getTypeNavn(), getFil().map(File::getAbsolutePath).orElse("Ingen fil"));
+    }
 
     public void setVerdi(String nøkkel, String verdi) {
         if(nøkkel == null || verdi == null) {
@@ -101,7 +119,35 @@ public abstract class Buffer {
         return Optional.empty();
     }
 
+    // Hjelpemetoder for å hente ut objekter av gitt type, eller kaste en feilmelding.
+    // Dette er mye enklere enn å sloss med typesystemet for å ha et typet map.
+    protected ApplicationFrame fetchFrame(Map<String, Object> args) {
+        return konverter(args.get(APPLICATION_FRAME), ApplicationFrame.class).orElseThrow(() -> new IllegalStateException("Ingen ApplicationFrame oppgitt"));
+    }
+
     public JScrollPane getSkroller() {
         return new BufferSkroller(this);
+    }
+
+    public static void registrerKommando(String buffertype, Kommando kommando) {
+        kommandoerForType.computeIfAbsent(buffertype, ignored -> new ArrayList<>()).add(kommando);
+    }
+
+    public static  void registrerKommando(Buffer buffer, Kommando kommando) {
+        registrerKommando(buffer.getTypeNavn(), kommando);
+    }
+
+    public Collection<Kommando> kommandoerForType(String type) {
+        return kommandoerForType.getOrDefault(type, Collections.emptyList());
+    }
+
+    public Stream<Kommando> lovligeKommandoer() {
+        return Stream.of(kommandoerForType(getTypeNavn()),
+                         frame.globaleKommandoer())
+                .flatMap(Collection::stream);
+    }
+
+    public void setFil(File fil) {
+        this.fil = fil;
     }
 }

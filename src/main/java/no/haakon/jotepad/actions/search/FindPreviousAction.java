@@ -1,7 +1,7 @@
 package no.haakon.jotepad.actions.search;
 
 import no.haakon.jotepad.gui.components.ApplicationFrame;
-import no.haakon.jotepad.model.buffer.AbstractTekstBuffer;
+import no.haakon.jotepad.model.buffer.tekst.AbstractTekstBuffer;
 
 import java.awt.event.ActionEvent;
 

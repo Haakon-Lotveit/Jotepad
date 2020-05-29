@@ -38,6 +38,7 @@ public abstract class AbstractSaveAction extends AbstractJotepadAction {
         switch (valg) {
             case APPROVE:
                 File fil = chooser.getSelectedFile();
+                buffer.setFil(fil);
                 buffer.getEditor().lagre();
             case ERROR:
 

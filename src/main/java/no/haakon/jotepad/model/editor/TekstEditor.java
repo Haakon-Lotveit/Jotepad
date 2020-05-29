@@ -1,12 +1,16 @@
 package no.haakon.jotepad.model.editor;
 
 import no.haakon.jotepad.actions.undo.TekstUndoer;
-import no.haakon.jotepad.model.buffer.AbstractTekstBuffer;
+import no.haakon.jotepad.model.GuiHelpers;
+import no.haakon.jotepad.model.buffer.Buffer;
+import no.haakon.jotepad.model.buffer.tekst.AbstractTekstBuffer;
 
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 public class TekstEditor extends Editor {
 
@@ -18,39 +22,26 @@ public class TekstEditor extends Editor {
         undoer = new TekstUndoer(null);
         this.buffer = buffer;
     }
+
+
     @Override
-    public void lagre() {
-        throw new UnsupportedOperationException("ikke implementert");
+    protected AbstractTekstBuffer getBuffer() {
+        return buffer;
     }
 
     @Override
     public void undo() {
-
+        undoer.undo();
     }
 
     public int getMarkørPosisjon() {
-        return -1;
+        return buffer.getComponent().getCaretPosition();
     }
 
     public String getValgTekst() {
-        return "";
+        return buffer.getComponent().getSelectedText();
     }
 
-    public OptionalInt getCaretPosition() {
-        JComponent comp = null; //getBuffer().getComponent();
-        if(comp instanceof JTextComponent) {
-            return OptionalInt.of(((JTextComponent) comp).getCaretPosition());
-        }
-        return OptionalInt.empty();
-    }
-
-    public Optional<String> getSelectedText() {
-        if(null /*getBuffer()*/ instanceof AbstractTekstBuffer) {
-            AbstractTekstBuffer tekstBuffer = (AbstractTekstBuffer) null; //getBuffer();
-            return Optional.of(tekstBuffer.getComponent().getSelectedText());
-        }
-        return Optional.empty();
-    }
 
     // TODO: Hva skal egentlig inn i Editor-klassene?
     public String getTekst() {

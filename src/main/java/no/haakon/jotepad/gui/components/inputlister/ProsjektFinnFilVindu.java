@@ -1,4 +1,6 @@
-package no.haakon.jotepad.gui.components;
+package no.haakon.jotepad.gui.components.inputlister;
+
+import no.haakon.jotepad.gui.components.ApplicationFrame;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;

@@ -1,7 +1,8 @@
-package no.haakon.jotepad.model.buffer;
+package no.haakon.jotepad.model.buffer.tekst;
 
 import no.haakon.jotepad.gui.components.ApplicationFrame;
 import no.haakon.jotepad.model.GuiHelpers;
+import no.haakon.jotepad.model.buffer.Buffer;
 import no.haakon.jotepad.model.editor.TekstEditor;
 
 import javax.swing.*;
@@ -16,18 +17,14 @@ import java.util.Optional;
 
 public abstract class AbstractTekstBuffer extends Buffer {
 
-    private final File fil;
     private final TekstEditor editor;
     private final GuiHelpers guiHelpers;
-    private final ApplicationFrame frame;
-    private Charset charset;
+    protected Charset charset;
 
 
     public AbstractTekstBuffer(File fil, Map<String, Object> args) {
-        super();
+        super(fil, args);
         init();
-        this.fil = fil;
-        this.frame = konverter(args.get(Buffer.APPLICATION_FRAME), ApplicationFrame.class).orElseThrow(() -> new IllegalStateException("Ingen applikasjonsframe satt! Kan ikke lage buffer"));
         this.charset = konverter(args.get("charset"), Charset.class).orElse(Charset.defaultCharset());
         this.guiHelpers = new GuiHelpers(frame);
         this.editor = new TekstEditor(this);
@@ -95,37 +92,6 @@ public abstract class AbstractTekstBuffer extends Buffer {
         getComponent().setEnabled(false);
     }
 
-    @Override
-    public void save() {
-        if(fil == null) {
-            System.err.println("Ingen fil satt, kan ikke lagre.");
-            return;
-        }
-
-        if (!fil.canWrite()) {
-            System.err.println("Har ikke skriverettigheter til " + fil.getAbsolutePath());
-            String feilmelding = String.format("Har ikke skriverettigheter til fil %s. Kan ikke lagre.", fil.getAbsolutePath());
-            guiHelpers.popupError("Kan ikke lagre", feilmelding);
-            return;
-        }
-
-        try (FileOutputStream fos = new FileOutputStream(fil)) {
-            byte[] data = editor.getTekst().getBytes(StandardCharsets.UTF_8);
-            try {
-                fos.write(data);
-            } catch (IOException ioe) {
-                System.err.println("Kan ikke skrive data:\n" + ioe);
-                guiHelpers.popupError("Feil under lagring", "Kan ikke skrive data.");
-            }
-        } catch (FileNotFoundException fnfe) {
-            System.err.println("Finner ikke filen.");
-            guiHelpers.popupError("Finner ikke filen", String.format("Fil %s finnes ikke", fil.getAbsolutePath()));
-        } catch (IOException ioe) {
-            System.err.println("En generisk io-feil oppstod:\n" + ioe);
-            guiHelpers.popupError("Feil under lagring", "En ukjent feil oppstod under lagring");
-        }
-    }
-
     public GuiHelpers guiHelpers() {
         return guiHelpers;
     }
@@ -135,4 +101,9 @@ public abstract class AbstractTekstBuffer extends Buffer {
     }
     public abstract JTextComponent getComponent();
     public abstract Document getDocument();
+
+    @Override
+    public byte[] filInnhold() {
+        return getComponent().getText().getBytes(charset);
+    }
 }

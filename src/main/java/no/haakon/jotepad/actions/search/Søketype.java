@@ -1,6 +1,6 @@
 package no.haakon.jotepad.actions.search;
 
-import no.haakon.jotepad.model.buffer.AbstractTekstBuffer;
+import no.haakon.jotepad.model.buffer.tekst.AbstractTekstBuffer;
 
 import java.util.function.Function;
 

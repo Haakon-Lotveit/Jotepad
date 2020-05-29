@@ -22,7 +22,7 @@ final public class SaveFileAction extends AbstractSaveAction {
      */
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        Consumer<File> lagre = (ignored) -> frame.synligBuffer().save();
+        Consumer<File> lagre = (ignored) -> frame.synligBuffer().getEditor().lagre();
         frame.synligBuffer().getFil().ifPresentOrElse(lagre, this::selectNewFile);
     }
 }

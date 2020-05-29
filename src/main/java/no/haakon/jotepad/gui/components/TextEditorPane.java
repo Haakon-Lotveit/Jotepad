@@ -70,8 +70,4 @@ public class TextEditorPane extends JTextArea {
         }
     }
 
-    public void newFile() {
-        this.editingFile = null;
-        this.setText("");
-    }
 }

@@ -1,15 +1,21 @@
 package no.haakon.jotepad.gui.components;
 
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
+import groovy.lang.MissingPropertyException;
 import no.haakon.jotepad.gui.menubar.JotepadMenubar;
+import no.haakon.jotepad.kommando.Kommando;
 import no.haakon.jotepad.model.buffer.Buffer;
 import no.haakon.jotepad.model.buffer.BufferFactory;
+import no.haakon.jotepad.model.buffer.tekst.LoggBuffer;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -18,12 +24,14 @@ import java.util.stream.Collectors;
 public class ApplicationFrame extends JFrame {
 
     public static final String TITLE = "Jotepad";
+    private final Binding groovyBindelser;
+    private final GroovyShell shell;
     private Buffer currentBuffer = null;
     private final CardLayout layout;
     private final JPanel panel;
-    private Map<String, String> state = new HashMap<>();
-    private Map<String, Map<Class<?>, Object>> typedState = new HashMap<>();
     private BufferFactory bufferFactory;
+    private List<Kommando> globaleKommandoer = new ArrayList<>();
+    private final LoggBuffer logg;
 
     public ApplicationFrame() {
         super();
@@ -32,7 +40,26 @@ public class ApplicationFrame extends JFrame {
         this.add(panel);
 
         this.bufferFactory = new BufferFactory(this);
-        nyTomBuffer();
+
+        logg = new LoggBuffer(Map.of(Buffer.APPLICATION_FRAME, this));
+        addBuffer(logg);
+        String velkomstMelding = "" +
+                "Velkommen til Jotepad! Dette er loggen, der meldinger fra systemet blir lagt!\n" +
+                "Akkurat nå er det mye klabb og babb i systemet, og ingenting er ferdig.\n" +
+                "Snart blir denne loggen en mer ordentlig logg, og brukergrensesnittet blir mer ordentlig av seg.\n" +
+                "Hvis du vil prøve editoren kan du åpne en fil, men pass på! Verktøylinjen vil med tiden forsvinne.\n" +
+                "For å kjøre kommandoer som er definerte kan du bruke Alt + X, for å kjøre en vilkårlig snutt med groovy-kode, bruk Alt + .";
+        logg.getEditor().melding(velkomstMelding);
+
+
+        // Oppretter groovy-tingene:
+        this.groovyBindelser = new Binding();
+        this.shell = new GroovyShell(groovyBindelser);
+
+        opprettGroovyFunksjoner();
+
+        // Når groovy vet om skallet, er det på tide å legge til grunnleggende variabler
+        groovyBindelser.setVariable("frame", this);
 
         setJMenuBar(new JotepadMenubar(this));
 
@@ -40,6 +67,11 @@ public class ApplicationFrame extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setPreferredSize(new Dimension(1366, 740));
         this.pack();
+    }
+
+    private void opprettGroovyFunksjoner() {
+        groovyBindelser.setVariable("loggbuffer", logg);
+        groovyBindelser.setVariable("message-logger", logg.getEditor());
     }
 
     public void sentrerPåSkjerm() {
@@ -141,28 +173,33 @@ public class ApplicationFrame extends JFrame {
     // Håndterer state som ymse kommandoer og lignende trenger å sette...
 
 
-    public ApplicationFrame setValue(String key, String value) {
-        state.put(key, value);
+    public ApplicationFrame setValue(String key, Object value) {
+        groovyBindelser.setVariable(key, value);
         return this;
     }
 
-
-    public String getValue(String key) {
-        return state.get(key);
+    public Optional<Object> getValue(String key) {
+        try {
+            return Optional.ofNullable(groovyBindelser.getVariable(key));
+        } catch (MissingPropertyException mpe) {
+            return Optional.empty();
+        }
     }
 
-    // Dette er gjort i Effective Java et sted. Jeg trenger bare et sted å dumpe noe global state før Alex Jones ser det.
-    // WHUH? GLOBALISM?! AAAAARG! - Alex Jones
-    public <T> ApplicationFrame setTypedObject(Class<T> klasse, String navn, T objekt) {
-//        private final Map<String, Map<Class<?>, Object>> objekter;
-        typedState.computeIfAbsent(navn, ignored -> new HashMap<>()).put(klasse, objekt);
-        return this;
-    }
-    // Dette er gjort i Effective Java et sted. Jeg trenger bare et sted å dumpe noe global state før Alex Jones ser det.
-    // WHUH? GLOBALISM?! AAAAARG! - Alex Jones
-    public <T> T getTypedObject(Class<T> klasse, String navn) {
-        // garantert å være av type T gitt at eneste skriving skjer via setTypedObject.
-        return (T) typedState.getOrDefault(navn, new HashMap<>()).get(klasse);
+    public void registrerGlobalKommando(Kommando kommando) {
+        this.globaleKommandoer.add(kommando);
     }
 
+    public Collection<Kommando> globaleKommandoer() {
+        return Collections.unmodifiableCollection(globaleKommandoer);
+    }
+
+
+    public Binding bindelser() {
+        return groovyBindelser;
+    }
+
+    public GroovyShell lagShell() {
+        return shell;
+    }
 }

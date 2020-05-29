@@ -28,10 +28,10 @@ public abstract class AbstractSearchAction extends AbstractJotepadAction {
     }
 
     protected String getSearchTerm() {
-        return frame.getValue(SEARCH_STATE_PREFIX + SEARCH_TERM);
+        return frame.getValue(SEARCH_STATE_PREFIX + SEARCH_TERM).orElse("").toString();
     }
 
     protected Søketype getSøketype() {
-        return Søketype.valueOf(frame.getValue(SEARCH_STATE_PREFIX + SEARCH_TYPE));
+        return Søketype.valueOf(frame.getValue(SEARCH_STATE_PREFIX + SEARCH_TYPE).orElse("").toString());
     }
 }

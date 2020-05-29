@@ -1,6 +1,11 @@
 package no.haakon.jotepad.start;
 
 import no.haakon.jotepad.gui.components.ApplicationFrame;
+import no.haakon.jotepad.kommando.BufferType;
+import no.haakon.jotepad.kommando.NyRadEtter;
+import no.haakon.jotepad.kommando.PopupMessage;
+import no.haakon.jotepad.model.buffer.Buffer;
+import no.haakon.jotepad.model.buffer.tabell.TabellBuffer;
 
 import javax.swing.*;
 import java.io.File;
@@ -31,6 +36,27 @@ public class Jotepad {
         //setFileAssociations(properties);
         System.out.println("Tilgjengelige utseender:");
         Arrays.stream(UIManager.getInstalledLookAndFeels()).forEach(info -> System.out.println(info.getClassName()));
+        setLookAndFeel();
+        ApplicationFrame applicationFrame = new ApplicationFrame();
+
+        registrerGlobaleKommandoer(applicationFrame);
+
+
+        applicationFrame.pack();
+        applicationFrame.sentrerPåSkjerm();
+        applicationFrame.setVisible(true);
+    }
+
+    private static void registrerGlobaleKommandoer(ApplicationFrame applicationFrame) {
+        applicationFrame.registrerGlobalKommando(new PopupMessage());
+        applicationFrame.registrerGlobalKommando(new BufferType());
+    }
+
+    private static void registrerBufferKommandoer() {
+        Buffer.registrerKommando(TabellBuffer.TYPE_NAVN, new NyRadEtter());
+    }
+
+    private static void setLookAndFeel() {
         if (System.getenv().containsKey("LOOK_AND_FEEL")) {
             System.out.println("Fant systemvariabel LOOK_AND_FEEL. Bruker denne til å sette utseende.");
             forsøkLookAndFeel(System.getenv("LOOK_AND_FEEL"));
@@ -42,14 +68,8 @@ public class Jotepad {
         } else {
             useSystemLookAndFeel();
         }
-        ApplicationFrame applicationFrame = new ApplicationFrame();
-
-        applicationFrame.pack();
-        applicationFrame.sentrerPåSkjerm();
-        applicationFrame.setVisible(true);
-
-
     }
+
 
     private static Properties loadProperties() {
         File propertyFile = getPropertyFile();

@@ -5,10 +5,14 @@ import no.haakon.jotepad.actions.buffer.ForrigeBufferAction;
 import no.haakon.jotepad.actions.buffer.ListBufferAction;
 import no.haakon.jotepad.actions.buffer.NesteBufferAction;
 import no.haakon.jotepad.actions.buffer.SlettBufferAction;
+import no.haakon.jotepad.actions.kommando.EvaluerUttrykkAction;
+import no.haakon.jotepad.actions.kommando.KjørKommandoAction;
 import no.haakon.jotepad.actions.prosjekt.ProsjektFilSøkAction;
 import no.haakon.jotepad.actions.prosjekt.ProsjektTekstSøkAction;
 import no.haakon.jotepad.actions.prosjekt.SettProsjektMappe;
 import no.haakon.jotepad.actions.search.*;
+import no.haakon.jotepad.actions.tabell.NyKolonneAction;
+import no.haakon.jotepad.actions.tabell.NyRadAction;
 import no.haakon.jotepad.gui.components.ApplicationFrame;
 
 import javax.swing.*;
@@ -29,6 +33,8 @@ public class JotepadMenubar extends JMenuBar {
         setupSøking();
         setupProsjekt();
         setupBuffere();
+        setupTabell();
+        setupKommandoer();
     }
 
     private void setupFil() {
@@ -143,6 +149,30 @@ public class JotepadMenubar extends JMenuBar {
                                 KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK)));
 
         this.add(buffer);
+    }
+
+    private void setupTabell() {
+        JMenu tabell = new JMenu("Tabell");
+        tabell.add(lagJMenuItem("Ny kolonne",
+                                new NyKolonneAction(frame),
+                                KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.ALT_DOWN_MASK)));
+        tabell.add(lagJMenuItem("Ny rad",
+                                new NyRadAction(frame),
+                                KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.ALT_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK)));
+
+        this.add(tabell);
+    }
+
+    private void setupKommandoer() {
+        JMenu kommandoer = new JMenu("Kommandoer");
+        kommandoer.add(lagJMenuItem("Kjør...",
+                                new KjørKommandoAction(frame),
+                                KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.ALT_DOWN_MASK)));
+
+        kommandoer.add(lagJMenuItem("Evaluer...",
+                                    new EvaluerUttrykkAction(frame),
+                                    KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, InputEvent.ALT_DOWN_MASK)));
+        this.add(kommandoer);
     }
 
     private JMenuItem lagJMenuItem(String navn, Action action, KeyStroke hurtigtast) {

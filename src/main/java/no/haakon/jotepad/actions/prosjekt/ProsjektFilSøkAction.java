@@ -1,7 +1,7 @@
 package no.haakon.jotepad.actions.prosjekt;
 
 import no.haakon.jotepad.gui.components.ApplicationFrame;
-import no.haakon.jotepad.gui.components.ProsjektFinnFilVindu;
+import no.haakon.jotepad.gui.components.inputlister.ProsjektFinnFilVindu;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

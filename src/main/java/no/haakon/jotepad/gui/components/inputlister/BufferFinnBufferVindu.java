@@ -1,5 +1,6 @@
-package no.haakon.jotepad.gui.components;
+package no.haakon.jotepad.gui.components.inputlister;
 
+import no.haakon.jotepad.gui.components.ApplicationFrame;
 import no.haakon.jotepad.model.buffer.Buffer;
 
 import javax.swing.*;

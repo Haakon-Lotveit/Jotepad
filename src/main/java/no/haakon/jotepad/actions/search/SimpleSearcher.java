@@ -1,8 +1,6 @@
 package no.haakon.jotepad.actions.search;
 
-import no.haakon.jotepad.model.buffer.AbstractTekstBuffer;
-
-import java.util.OptionalInt;
+import no.haakon.jotepad.model.buffer.tekst.AbstractTekstBuffer;
 
 public class SimpleSearcher implements Searcher {
 

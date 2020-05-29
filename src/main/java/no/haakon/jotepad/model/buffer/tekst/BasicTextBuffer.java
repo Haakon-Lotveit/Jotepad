@@ -1,7 +1,4 @@
-package no.haakon.jotepad.model.buffer;
-
-import no.haakon.jotepad.gui.components.BufferSkroller;
-import no.haakon.jotepad.model.editor.TekstEditor;
+package no.haakon.jotepad.model.buffer.tekst;
 
 import javax.swing.*;
 import javax.swing.text.Document;
@@ -24,9 +21,7 @@ public class BasicTextBuffer extends AbstractTekstBuffer {
     }
     @Override
     public void init() {
-
         tekstvindu = new JTextArea();
-
     }
 
     @Override

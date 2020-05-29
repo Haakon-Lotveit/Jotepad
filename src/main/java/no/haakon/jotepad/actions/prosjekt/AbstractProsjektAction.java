@@ -8,10 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 public abstract class AbstractProsjektAction extends AbstractJotepadAction {
@@ -28,11 +25,13 @@ public abstract class AbstractProsjektAction extends AbstractJotepadAction {
     }
 
     public void oppdaterFilIndeks() {
-        String sti = frame.getValue(NØKKEL_INDEKSERT_MAPPE);
-        if (null == sti || sti.isEmpty()) {
+        Optional<String> kanskjeSti = frame.getValue(NØKKEL_INDEKSERT_MAPPE).map(Object::toString);
+        if (kanskjeSti.isEmpty()) {
             System.err.println("ingen mappe satt, ingen indeksering");
             return;
         }
+
+        String sti = kanskjeSti.get();
 
         final Map<File, String> lastetInnholdForSøk = new HashMap<>();
         final Set<File> filerForÅpning = new HashSet<>();
@@ -44,8 +43,8 @@ public abstract class AbstractProsjektAction extends AbstractJotepadAction {
 
         fileStuff(leggTilFil, new File(sti));
 
-        frame.setTypedObject(Set.class, NØKKEL_INDEKSERTE_FILER, filerForÅpning);
-        frame.setTypedObject(Map.class, NØKKEL_INDEKSERT_INNHOLD, lastetInnholdForSøk);
+        frame.setValue(NØKKEL_INDEKSERTE_FILER, filerForÅpning);
+        frame.setValue(NØKKEL_INDEKSERT_INNHOLD, lastetInnholdForSøk);
     }
 
     public void lastFilForSøk(File fil, Map<File, String> lastedeFiler) {
@@ -78,7 +77,7 @@ public abstract class AbstractProsjektAction extends AbstractJotepadAction {
     }
 
     protected boolean mappeHarBlittSatt() {
-        if(frame.getValue(NØKKEL_INDEKSERT_MAPPE) == null) {
+        if(frame.getValue(NØKKEL_INDEKSERT_MAPPE).isEmpty()) {
             System.err.println("Ingen mappe indeksert, kan ikke gjøre noe enda.");
             frame.synligBuffer().guiHelpers().popupError("Ingen mappe satt", "Ingen mappe satt som prosjektmappe. Sett denne først.");
             return false;
@@ -89,12 +88,12 @@ public abstract class AbstractProsjektAction extends AbstractJotepadAction {
     // Vi kan garantere at denne holder, gitt at andre aksesser til editor respekterer grensene som er satt.
     @SuppressWarnings("unchecked")
     protected Set<File> getSøkbareFiler() {
-        return (Set<File>) frame.getTypedObject(Set.class, NØKKEL_INDEKSERTE_FILER);
+        return frame.getValue(NØKKEL_INDEKSERTE_FILER).map(o -> ((Set<File>) o)).orElse(Collections.emptySet());
     }
 
     // Vi kan garantere at også denne casten holder, gitt at andre aksesser til editor respekterer grensene som er satt.
     @SuppressWarnings("unchecked")
     protected Map<File, String> getIndeksertInnhold() {
-        return (Map<File, String>) frame.getTypedObject(Map.class, NØKKEL_INDEKSERT_INNHOLD);
+        return frame.getValue(NØKKEL_INDEKSERT_INNHOLD).map(o -> ((Map<File, String>) o)).orElse(Collections.emptyMap());
     }
 }

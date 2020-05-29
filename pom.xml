@@ -28,4 +28,21 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <!-- Vi skal bruke Groovy som innebygget skriptmotor -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>3.0.3</version>
+            <type>pom</type>
+        </dependency>
+
+        <!-- For å bruke CSV-filer -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.1</version>
+        </dependency>
+    </dependencies>
+
 </project>
