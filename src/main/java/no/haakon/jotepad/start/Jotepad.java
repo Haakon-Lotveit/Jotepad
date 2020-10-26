@@ -1,11 +1,15 @@
 package no.haakon.jotepad.start;
 
-import no.haakon.jotepad.gui.components.ApplicationFrame;
-import no.haakon.jotepad.kommando.BufferType;
-import no.haakon.jotepad.kommando.NyRadEtter;
-import no.haakon.jotepad.kommando.PopupMessage;
-import no.haakon.jotepad.model.buffer.Buffer;
-import no.haakon.jotepad.model.buffer.tabell.TabellBuffer;
+import no.haakon.jotepad.old.gui.components.ApplicationFrame;
+import no.haakon.jotepad.old.kommando.BufferType;
+import no.haakon.jotepad.old.kommando.global.ListBuffere;
+import no.haakon.jotepad.old.kommando.NyRadEtter;
+import no.haakon.jotepad.old.kommando.global.PopupMessage;
+import no.haakon.jotepad.old.kommando.global.finnfil.FinnFil;
+import no.haakon.jotepad.old.kommando.global.lagrefil.LagreFil;
+import no.haakon.jotepad.old.kommando.global.lagrefil.LagreFilSom;
+import no.haakon.jotepad.old.model.buffer.Buffer;
+import no.haakon.jotepad.old.model.buffer.tabell.TabellBuffer;
 
 import javax.swing.*;
 import java.io.File;
@@ -13,15 +17,19 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 /**
  * no.haakon.jotepad.start.Jotepad er en Notepad-klon skrevet i Java.
  * Dette er ikke et komplisert program, og det har ikke noen spesielle egenskaper.
  * I beste fall er det en illustrasjon av hvordan en kan lage et enkelt program med Swing i Java.
  */
+@Deprecated // dette er den gamle starteren, ApplicationStarter er den nye. Den nye er ikke ferdig enda.
 public class Jotepad {
+
+    private static String hjemmemappe;
+    private static String jotepadFolder;
 
     private static void useSystemLookAndFeel() {
         try {
@@ -32,15 +40,16 @@ public class Jotepad {
     }
 
     public static void main(String[] args) {
+        setupFolders();
         Properties properties = loadProperties();
         //setFileAssociations(properties);
         System.out.println("Tilgjengelige utseender:");
         Arrays.stream(UIManager.getInstalledLookAndFeels()).forEach(info -> System.out.println(info.getClassName()));
         setLookAndFeel();
-        ApplicationFrame applicationFrame = new ApplicationFrame();
+        ApplicationFrame applicationFrame = new ApplicationFrame(hjemmemappe);
 
         registrerGlobaleKommandoer(applicationFrame);
-
+        registrerBufferKommandoer();
 
         applicationFrame.pack();
         applicationFrame.sentrerPåSkjerm();
@@ -50,6 +59,10 @@ public class Jotepad {
     private static void registrerGlobaleKommandoer(ApplicationFrame applicationFrame) {
         applicationFrame.registrerGlobalKommando(new PopupMessage());
         applicationFrame.registrerGlobalKommando(new BufferType());
+        applicationFrame.registrerGlobalKommando(new FinnFil(applicationFrame));
+        applicationFrame.registrerGlobalKommando(new ListBuffere(applicationFrame));
+        applicationFrame.registrerGlobalKommando(new LagreFil(applicationFrame));
+        applicationFrame.registrerGlobalKommando(new LagreFilSom(applicationFrame));
     }
 
     private static void registrerBufferKommandoer() {
@@ -92,27 +105,44 @@ public class Jotepad {
         return out;
     }
 
+    private static void setupFolders() {
+        final String os = System.getProperty("os.name");
+        final String format = String.format("OS rapportert som %s, hvilket er tolket som %%s.%n", os);
+
+        String hjemmemappe = null;
+        String jotepadFolder = null;
+        if(os.toLowerCase().contains("windows")) {
+            System.out.printf(format, "Microsoft Windows");
+            hjemmemappe = System.getenv("LOCALAPPDATA");
+            jotepadFolder = "jotepad";
+
+            // En eller annen nixbox, forhåpentligvis POSIX.
+        } else if(Stream.of("aix", "nux", "nix", "osx", "sunos", "mac").anyMatch(s -> os.toLowerCase().contains(s))) {
+            hjemmemappe = System.getProperty("user.home");
+            jotepadFolder = ".jotepad";
+            System.out.printf(format, "et UNIX-aktig os");
+            // SOMETHING ELSE. All bets are off, but we'll give it a go.
+        } else {
+            hjemmemappe = System.getProperty("user.home");
+            jotepadFolder = "jotepad";
+            System.out.printf(format, "noe vi ikke har peiling på hva er, men vi skal prøve uansett.");
+            System.out.println("Consider setting the property jotepad.config to the folder you want to have the configuration in.");
+        }
+        Jotepad.hjemmemappe = hjemmemappe;
+        Jotepad.jotepadFolder = jotepadFolder;
+    }
+
     private static File getPropertyFile() {
         final String os = System.getProperty("os.name");
-        final String format = String.format("OS raportert som %s, hvilket er tolket som %%s.%n", os);
+        final String format = String.format("OS rapportert som %s, hvilket er tolket som %%s.%n", os);
 
         String confDir;
         if(System.getProperties().containsKey("jotepad.config")) {
             confDir = System.getProperty("jotepad.config");
-            System.out.println("Egendefinert .");
+            System.out.println("Egendefinert konfigurasjon i property jotepad.config. Bruker fil: '" + confDir + "'");
             // Microsoft Windows
-        } else if(os.toLowerCase().contains("windows")) {
-            System.out.printf(format, "Microsoft Windows");
-            confDir = System.getenv("LOCALAPPDATA") + "/jotepad";
-            //Some version of Unix, hopefully POSIX.
-        } else if(List.of("aix", "nux", "nix", "osx", "sunos", "mac").contains(os.toLowerCase())) {
-            confDir = System.getenv("user.home") + "/.jotepad";
-            System.out.printf(format, "a unix style OS");
-            // SOMETHING ELSE. All bets are off, but we'll give it a go.
         } else {
-            confDir = System.getenv("user.home") + File.separator + "jotepad";
-            System.out.printf(format, "something we have no clue what is. But we're going to give it a go anyway...");
-            System.out.println("Consider setting the property jotepad.config to the folder you want to have the configuration in.");
+            confDir = hjemmemappe + File.separator + jotepadFolder;
         }
 
         File configurationFile = new File(confDir + File.separator + "jotepad.properties");

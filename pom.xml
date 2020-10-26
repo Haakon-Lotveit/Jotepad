@@ -21,7 +21,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <release>12</release>
+                    <release>13</release>
                     <encoding>${encoding}</encoding>
                 </configuration>
             </plugin>
@@ -43,6 +43,14 @@
             <artifactId>opencsv</artifactId>
             <version>5.1</version>
         </dependency>
+
+        <!-- Vi bruker char og slikt overalt. Kan likesågodt bruke raske implementasjoner... -->
+        <dependency>
+            <groupId>net.sf.trove4j</groupId>
+            <artifactId>trove4j</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+
     </dependencies>
 
 </project>
